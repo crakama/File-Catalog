@@ -28,11 +28,8 @@ public class FileCatalogDAO {
         if (!tableExists(conn)) {
             Statement statement = conn.createStatement();
             statement.executeUpdate("CREATE TABLE " + TABLE_NAME
-                            + BRA
-                            + USER_COLUMN_NAME + " VARCHAR(32) PRIMARY KEY, "
-                            + PASS_COLUMN_NAME + " VARCHAR(32)");
-
-            //statement.executeUpdate(sql);
+                    + " (" + USER_COLUMN_NAME + " VARCHAR(32) PRIMARY KEY, "
+                    + PASS_COLUMN_NAME + " VARCHAR(32))");
 
         }
         return conn;
@@ -81,7 +78,7 @@ public class FileCatalogDAO {
     public Connection connectToFileCatalogDB(String datasource,String dbms) throws ClassNotFoundException, SQLException {
         if(dbms.equalsIgnoreCase("mysql")){
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/filecatalog" + datasource, "root", "root");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + datasource, "root", "root");
             return conn;
         }
         System.out.println("Connection Returned Null: Unable to create datasource, unknown dbms.");

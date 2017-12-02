@@ -1,8 +1,7 @@
 package client.view;
 
 import common.ClientRemoteInterface;
-import common.Credentials;
-import common.ServerRemoteInterfaceStub;
+import common.ServerRemoteInterface;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,10 +14,10 @@ import java.sql.SQLException;
 
 public class ClientRemoteImpl implements Runnable {
     BufferedReader bufferedReader;
-    ServerRemoteInterfaceStub sRemoteInterface;
+    ServerRemoteInterface sRemoteInterface;
     ClientRemoteInterface cRemoteInterface;
     int connectionId;
-    public ClientRemoteImpl() throws RemoteException{
+    public ClientRemoteImpl() {
 
     }
     public void start(){
@@ -28,50 +27,46 @@ public class ClientRemoteImpl implements Runnable {
     @Override
     public void run(){
         try{
+            //initConnection();
+
             bufferedReader = new BufferedReader(new InputStreamReader(System.in));
             System.out.println("Enter Host address to connect to:");
             String host = bufferedReader.readLine();
             lookupServer(host);
 
-            initConnection();
-
-
-
+            System.out.println("NEW USER REGISTRATION:");
+            System.out.println();
             System.out.println("Enter your Name:");
             String name = bufferedReader.readLine();
             System.out.println("Enter your password:");
             String password = bufferedReader.readLine();
 
             //Invoke remote method
-            //sRemoteInterface.login(cRemoteInterface, new Credentials(name,password));
             sRemoteInterface.registerUser(name,password);
 
-        }catch (ClassNotFoundException|SQLException | NotBoundException |IOException e){
+        }catch (SQLException |IOException e){
             System.out.println("Could Not Read Credentials from CMD");
             e.printStackTrace();
         }
 
-
     }
 
     /**
-     * Get reference to the remote object
+     * Client gets reference to the remote object
+     * @ServerRemoteInterfaceStub.REGISTERED_SERVER_NAME is the label of the required object
      * @param host
-     * @throwsNotBoundException
-     * @throwsMalformedURLException
-     * @throwsRemoteException
      */
-    public void lookupServer(String host) throws NotBoundException,MalformedURLException, RemoteException{
+    public void lookupServer(String host) {
     try {
-        sRemoteInterface = (ServerRemoteInterfaceStub) Naming.lookup("//" + host + "/" + ServerRemoteInterfaceStub.REGISTERED_SERVER_NAME);
+        sRemoteInterface = (ServerRemoteInterface) Naming.lookup("//" + host + "/" + ServerRemoteInterface.REGISTERED_SERVER_NAME);
         if(sRemoteInterface == null){
           System.out.println("Naming.lookup: Lookup failed. Servlet is null.");
           return;
         }
-        System.out.println("Naming.lookup: Successful.");
+        System.out.println("NAMING LOOKUP STATUS: Successful.");
 
     }catch (Exception e){
-        System.out.println("Cannot connect to RMI Registry...");
+        System.out.println("FAILED TO GET OBJECT REFERENCE AT RMI REGISTRY...");
     }
     }
 
@@ -82,17 +77,17 @@ public class ClientRemoteImpl implements Runnable {
      * use that driver to establish a JDBC connection to the catalogue database.
      */
     public void initConnection() throws ClassNotFoundException, RemoteException, SQLException {
-        connectionId = sRemoteInterface.openConnection();
+        sRemoteInterface.openConnection();
 
-        if(connectionId == -1){
+     /*   if(connectionId == -1){
             System.out.println(" -1 Error during OPEN db connection...");
-        }
+        }*/
     }
 
     /** Passes the SQL string that was entered to the remote object for execution
      * and retrieves the result set row by row from the remote object, displaying each row as it's retrieved.
      */
-    public void searchFile() throws IOException, SQLException {
+    public void searchFile() throws SQLException {
         String result;
         bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Enter file name to be searched:");
@@ -122,7 +117,7 @@ public class ClientRemoteImpl implements Runnable {
     * and connection objects are freed.
     */
 
-    public void finalizeConnection() throws RemoteException, SQLException {
+    public void finalizeConnection() {
         try {
             sRemoteInterface.closeConnection(connectionId);
         } catch (RemoteException e) {

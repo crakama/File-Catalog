@@ -3,6 +3,7 @@
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/../../Jade/lib/jade.jar!/" />
       <root url="jar://$PROJECT_DIR$/../../Jade/lib/commons-codec/commons-codec-1.3.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/Programs/mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

@@ -915,5 +915,24 @@
       <Charset>utf8mb4</Charset>
       <DefaultForCharset>0</DefaultForCharset>
     </collation>
+    <table id="231" parent="2" name="user">
+      <Engine>InnoDB</Engine>
+    </table>
+    <column id="232" parent="231" name="USERNAME">
+      <Position>1</Position>
+      <DataType>varchar(32)|0</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="233" parent="231" name="PASS">
+      <Position>2</Position>
+      <DataType>varchar(32)|0</DataType>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="234" parent="231" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>USERNAME</ColNames>
+      <Primary>1</Primary>
+    </key>
   </database-model>
 </dataSource>
