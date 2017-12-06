@@ -2,11 +2,9 @@ package server.controller;
 
 import common.ClientRemoteInterface;
 import common.Credentials;
-import common.ServerRemoteInterface;
+import common.ServerRMIInterface;
 import server.model.FileCatalogDAO;
 import server.model.UserImpl;
-
-import java.io.FileInputStream;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -14,17 +12,17 @@ import java.sql.SQLException;
 
 /**
  *
- * @RemoteServerImpl implements all methods defined in @ServerRemoteInterface for the Remote Server
+ * @RemoteServerImpl implements all methods defined in @ServerRMIInterface for the Remote Server
  * Implements methods to be accessed by client remotely e.g client calls on uploadFile method on the server stub
  * to get the server upload the file to DB
  */
-public class ServerRemoteImplStub extends UnicastRemoteObject implements ServerRemoteInterface,Serializable {
+public class ServerRMIImpl extends UnicastRemoteObject implements ServerRMIInterface,Serializable {
 
 FileCatalogDAO fileCatalogDAO;
     UserImpl user;
     private String datasource, dbms;
 
-    public ServerRemoteImplStub(String datasource, String dbms) throws RemoteException, SQLException, ClassNotFoundException {
+    public ServerRMIImpl(String datasource, String dbms) throws RemoteException, SQLException, ClassNotFoundException {
         super();
         fileCatalogDAO = new FileCatalogDAO(datasource,dbms);
         this.datasource = datasource;

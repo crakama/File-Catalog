@@ -1,22 +1,16 @@
 package client.view;
 
-import common.ServerRemoteInterface;
-import server.model.FileCatalogDAO;
+import common.ServerRMIInterface;
 import server.model.UserImpl;
-
 import java.io.*;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.util.Scanner;
 
 public class ClientRemoteImpl implements Runnable {
     BufferedReader bufferedReader;
-    ServerRemoteInterface sRemoteInterface;
+    ServerRMIInterface sRemoteInterface;
     Socket clientlink = null;
     //private InetAddress host;
     private final int port=1234;
@@ -37,9 +31,6 @@ public class ClientRemoteImpl implements Runnable {
     @Override
     public void run(){
         UserImpl userInterface = null;
-
-        String datasource = "filecatalog";
-        String dbms = "mysql";
         bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("You need to be connected to a remote server first!!!" +
                 " %n Enter Host address to connect to:");
@@ -94,6 +85,10 @@ public class ClientRemoteImpl implements Runnable {
 
 
     }
+    /**
+     * ObjectOutputStream object to Send request to server using TCP socket
+     * @param filename
+     */
 
     public void sendFile(String filename) throws IOException {
         try {
@@ -114,6 +109,8 @@ public class ClientRemoteImpl implements Runnable {
             out.writeObject(filedata);
             out.flush();
 
+            out.close();
+            fInputStream.close();
         } catch (IOException e) {
             System.out.println("Host Address Not Found:");
             e.printStackTrace();
@@ -122,19 +119,13 @@ public class ClientRemoteImpl implements Runnable {
     }
 
     /**
-     * PrintWriter object to Send request to server using TCP socket
-     * @param usercommand
-     */
-
-
-    /**
      * Client gets reference to the remote object
      * @ServerRemoteInterfaceStub.REGISTERED_SERVER_NAME is the label of the required object
      * @param host
      */
     public void lookupServer(String host) {
     try {
-        sRemoteInterface = (ServerRemoteInterface) Naming.lookup("//" + host + "/" + ServerRemoteInterface.REGISTERED_SERVER_NAME);
+        sRemoteInterface = (ServerRMIInterface) Naming.lookup("//" + host + "/" + ServerRMIInterface.REGISTERED_SERVER_NAME);
         if(sRemoteInterface == null){
           System.out.println("Naming.lookup: Lookup failed. sRemoteInterface is null.");
           return;

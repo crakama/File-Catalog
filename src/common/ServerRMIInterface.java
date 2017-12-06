@@ -12,7 +12,7 @@ import java.sql.SQLException;
  * @RemoteInterface will appear at both the client ans server side
  * @Remote exposes methods to be accessed by client remotely
  */
-public interface ServerRemoteInterface extends Remote  {
+public interface ServerRMIInterface extends Remote  {
     String REGISTERED_SERVER_NAME = "filecatalog";
     /**
      * Remote methods that Client calls on the server, as if they were remote
