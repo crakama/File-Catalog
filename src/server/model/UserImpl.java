@@ -7,6 +7,7 @@ public class UserImpl implements UserInterface {
     FileCatalogDAO fileCatalogDAO;
 
     /**
+     * arguments passed from @findUser
      * Creates a new user. The UserImpl object will have a database connection.
      * @param name The name of user.
      * @param pass    The password for user.
@@ -28,4 +29,6 @@ public class UserImpl implements UserInterface {
     public String getPassword() {
         return pass;
     }
+
+
 }

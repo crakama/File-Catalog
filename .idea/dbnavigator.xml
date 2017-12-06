@@ -25,7 +25,7 @@
     <show-object-properties value="true" />
     <loaded-nodes>
       <connection connection-id="c5524205-0f00-46fd-bdf0-42dc0e84b4b5">
-        <schema name="filecatalog" object-types="function, index, procedure, table, view" />
+        <schema name="filecatalog" object-types="column, constraint, function, index, procedure, table, dataset trigger, view" />
       </connection>
     </loaded-nodes>
   </component>
@@ -33,6 +33,13 @@
     <connection id="c5524205-0f00-46fd-bdf0-42dc0e84b4b5">
       <console name="Connection " type="STANDARD" />
     </connection>
+  </component>
+  <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-list connection-id="c5524205-0f00-46fd-bdf0-42dc0e84b4b5" dataset="filecatalog.user" active-filter-id="8d59a4e0-9b72-4f99-9168-c6cec5fc1e04">
+      <filter id="8d59a4e0-9b72-4f99-9168-c6cec5fc1e04" name="kate" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="USERNAME" operator="=" value="kate" active="true" />
+      </filter>
+    </filter-list>
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />

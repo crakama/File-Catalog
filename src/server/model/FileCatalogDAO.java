@@ -2,6 +2,7 @@ package server.model;
 
 import common.UserInterface;
 
+import java.io.FileInputStream;
 import java.sql.*;
 
 /**
@@ -10,16 +11,30 @@ import java.sql.*;
  */
 
 public class FileCatalogDAO {
-    private PreparedStatement createUserStmt;
+    private PreparedStatement createUserStmt,deleteUserStmt,findUserStmt,uploadFileStmt;
     Connection conn;
-    private static final String TABLE_NAME="USER";
+    private static final String USER_TABLE="USER";
+    private static final String FILE_TABLE="file";
     private static final String USER_COLUMN_NAME="USERNAME";
-    private static final String BRA =" (";
     private static final String PASS_COLUMN_NAME ="PASS";
+    private static final String FILEB ="files";
+    private static final String FNAME ="FNAME";
+    private static final String FSIZE ="FSIZE";
+    private static final String FOWNER ="FOWNER";
+    private static final String ACCESS_P ="ACCESS_P";
 
     public FileCatalogDAO(String datasource, String dbms) throws SQLException, ClassNotFoundException {
         conn = createDatasource(datasource,dbms);
         queryStatements(conn);
+    }
+
+    public FileCatalogDAO() {
+
+    }
+
+    public FileCatalogDAO(String datasource, String dbms, byte[] filedata) throws SQLException, ClassNotFoundException {
+        conn = connectToFileCatalogDB(datasource,dbms);
+        uploadfileDB(datasource,dbms,filedata);
     }
 
     private Connection createDatasource(String datasource, String dbms) throws
@@ -27,39 +42,16 @@ public class FileCatalogDAO {
         conn = connectToFileCatalogDB(datasource,dbms);
         if (!tableExists(conn)) {
             Statement statement = conn.createStatement();
-            statement.executeUpdate("CREATE TABLE " + TABLE_NAME
+            statement.executeUpdate("CREATE TABLE " + USER_TABLE
                     + " (" + USER_COLUMN_NAME + " VARCHAR(32) PRIMARY KEY, "
                     + PASS_COLUMN_NAME + " VARCHAR(32))");
+
+            statement.executeUpdate("CREATE TABLE " + FILE_TABLE
+                                        + " (" + FILEB + " LONGBLOB )");
 
         }
         return conn;
     }
-
-    private void queryStatements(Connection conn) throws SQLException {
-        createUserStmt = conn.prepareStatement("INSERT INTO " + TABLE_NAME + " VALUES(?, ?)");
-
-
-    }
-
-
-    private boolean tableExists(Connection connection) throws SQLException {
-        int tableNameColumn = 3;
-        DatabaseMetaData dbm = connection.getMetaData();
-        try (ResultSet rs = dbm.getTables(null, null, null, null)) {
-            for (; rs.next();) {
-                if (rs.getString(tableNameColumn).equals(TABLE_NAME)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-
-
-
-    //TO DO write SQL statement to add user to the database
-
     /**
      * @registerUser Creates a new user, userInterface is the user to be created
      * @param userInterface is an instance of UserImpl object but of type UserInterface,
@@ -74,6 +66,64 @@ public class FileCatalogDAO {
             System.out.println("Unable to register new user!!");
         }
     }
+
+    public UserImpl findUser(String username) throws SQLException{
+        findUserStmt.setString(1,username);
+        ResultSet rs = findUserStmt.executeQuery();
+        if(rs.next()){
+            return new UserImpl(username,rs.getString(PASS_COLUMN_NAME),this);
+        }
+        return null;
+    }
+    public void deleteUser(UserImpl userimpl) throws SQLException{
+        deleteUserStmt.setString(1,userimpl.getName());
+        deleteUserStmt.executeUpdate();
+    }
+    public void uploadfileDB(String datasource, String dbms, byte[] fdatabytes) throws SQLException, ClassNotFoundException {
+
+        uploadFileStmt = conn.prepareStatement("INSERT INTO file (files) values (?)");
+        uploadFileStmt.setBytes(1,fdatabytes);
+        uploadFileStmt.executeUpdate();
+    }
+
+    private void queryStatements(Connection conn) throws SQLException {
+        createUserStmt = conn.prepareStatement("INSERT INTO " + USER_TABLE + " VALUES(?, ?)");
+
+        deleteUserStmt = conn.prepareStatement("DELETE FROM "
+                                                    + USER_TABLE
+                                                    + " WHERE name = ?");
+
+        findUserStmt = conn.prepareStatement("SELECT * FROM "
+                                                    + USER_TABLE
+                                                    + " WHERE name = ?");
+
+
+/*        uploadFileStmt = conn.prepareStatement("INSERT INTO "
+                + FILE_TABLE + " VALUES (? )");*/
+        //uploadFileStmt = conn.prepareStatement("INSERT INTO file (files) values (?)");
+
+    }
+
+
+    private boolean tableExists(Connection connection) throws SQLException {
+        int tableNameColumn = 3;
+        DatabaseMetaData dbm = connection.getMetaData();
+        try (ResultSet rs = dbm.getTables(null, null, null, null)) {
+            for (; rs.next();) {
+                if (rs.getString(tableNameColumn).equals(USER_TABLE)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+
+
+
+    //TO DO write SQL statement to add user to the database
+
+
 
     public Connection connectToFileCatalogDB(String datasource,String dbms) throws ClassNotFoundException, SQLException {
         if(dbms.equalsIgnoreCase("mysql")){

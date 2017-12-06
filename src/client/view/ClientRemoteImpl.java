@@ -1,55 +1,131 @@
 package client.view;
 
-import common.ClientRemoteInterface;
 import common.ServerRemoteInterface;
+import server.model.FileCatalogDAO;
+import server.model.UserImpl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
+import java.io.*;
+import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 public class ClientRemoteImpl implements Runnable {
     BufferedReader bufferedReader;
     ServerRemoteInterface sRemoteInterface;
-    ClientRemoteInterface cRemoteInterface;
+    Socket clientlink = null;
+    //private InetAddress host;
+    private final int port=1234;
+    String host = null;
     int connectionId;
+    private boolean usercommandrcvd = false;
     public ClientRemoteImpl() {
 
     }
     public void start(){
+        if(usercommandrcvd){
+            return;
+        }
+        usercommandrcvd= true;
         new Thread(this).start();
     }
 
     @Override
     public void run(){
-        try{
-            //initConnection();
+        UserImpl userInterface = null;
 
-            bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Enter Host address to connect to:");
-            String host = bufferedReader.readLine();
+        String datasource = "filecatalog";
+        String dbms = "mysql";
+        bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("You need to be connected to a remote server first!!!" +
+                " %n Enter Host address to connect to:");
+        try {
+            host = bufferedReader.readLine();
             lookupServer(host);
 
-            System.out.println("NEW USER REGISTRATION:");
-            System.out.println();
-            System.out.println("Enter your Name:");
-            String name = bufferedReader.readLine();
-            System.out.println("Enter your password:");
-            String password = bufferedReader.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            //Invoke remote method
-            sRemoteInterface.registerUser(name,password);
+        while(usercommandrcvd){
+            try{
+                System.out.println("Enter Command to start the program:");
+                String readBytes = bufferedReader.readLine();
+                switch (readBytes){
 
-        }catch (SQLException |IOException e){
-            System.out.println("Could Not Read Credentials from CMD");
+                    case "register":
+                        System.out.println("You can now proceed with registration:");
+                        System.out.println();
+                        System.out.println("Enter your Name:");
+                        String name = bufferedReader.readLine();
+                        System.out.println("Enter your password:");
+                        String password = bufferedReader.readLine();
+                        //Invoke remote method
+                        sRemoteInterface.registerUser(name,password);
+                        System.out.println("You Successfully registered as a new user !!!:");
+                        break;
+                    case "upload":
+                        System.out.println("Enter file name e.g hw.pdf or code.jpg");
+                        String filename = bufferedReader.readLine();
+                        sendFile(filename);
+
+                        break;
+                    case "unregister":
+                        System.out.println("Enter username to unregister:");
+                        String unreguser = bufferedReader.readLine();
+                        if(unreguser == "n"){
+                            System.out.println("Enter Command to continue with the program:");
+                        }
+                        userInterface = sRemoteInterface.getUserRecord(unreguser);
+                        sRemoteInterface.unRegisterUser(userInterface);
+
+                    default:
+                        //System.out.println("You typed an invalid command");
+                }
+            }catch (SQLException |IOException e){
+                System.out.println("Could Not Read Credentials from CMD");
+                e.printStackTrace();
+            }
+        }
+
+
+    }
+
+    public void sendFile(String filename) throws IOException {
+        try {
+            clientlink = new Socket(host, port);
+            ObjectOutputStream out = new ObjectOutputStream(clientlink.getOutputStream());
+            FileInputStream fInputStream = new FileInputStream(filename);
+
+            //Convert file into bytes of array
+            long filelen = (new File(filename)).length();
+            int intfilen = (int)filelen;
+            byte[] filedata = new byte[intfilen];
+
+            //Read bytes into memory
+            fInputStream.read(filedata);
+            fInputStream.close();
+
+            //write byte array to socket
+            out.writeObject(filedata);
+            out.flush();
+
+        } catch (IOException e) {
+            System.out.println("Host Address Not Found:");
             e.printStackTrace();
         }
 
     }
+
+    /**
+     * PrintWriter object to Send request to server using TCP socket
+     * @param usercommand
+     */
+
 
     /**
      * Client gets reference to the remote object
@@ -60,7 +136,7 @@ public class ClientRemoteImpl implements Runnable {
     try {
         sRemoteInterface = (ServerRemoteInterface) Naming.lookup("//" + host + "/" + ServerRemoteInterface.REGISTERED_SERVER_NAME);
         if(sRemoteInterface == null){
-          System.out.println("Naming.lookup: Lookup failed. Servlet is null.");
+          System.out.println("Naming.lookup: Lookup failed. sRemoteInterface is null.");
           return;
         }
         System.out.println("NAMING LOOKUP STATUS: Successful.");

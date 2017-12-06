@@ -6,6 +6,8 @@ import common.ServerRemoteInterface;
 import server.model.FileCatalogDAO;
 import server.model.UserImpl;
 
+import java.io.FileInputStream;
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
@@ -16,9 +18,10 @@ import java.sql.SQLException;
  * Implements methods to be accessed by client remotely e.g client calls on uploadFile method on the server stub
  * to get the server upload the file to DB
  */
-public class ServerRemoteImplStub extends UnicastRemoteObject implements ServerRemoteInterface {
+public class ServerRemoteImplStub extends UnicastRemoteObject implements ServerRemoteInterface,Serializable {
 
 FileCatalogDAO fileCatalogDAO;
+    UserImpl user;
     private String datasource, dbms;
 
     public ServerRemoteImplStub(String datasource, String dbms) throws RemoteException, SQLException, ClassNotFoundException {
@@ -32,8 +35,17 @@ FileCatalogDAO fileCatalogDAO;
     @Override
     public synchronized void registerUser(String username, String pass) throws SQLException {
         //TO DO check if username is unique
-        UserImpl user = new UserImpl(username,pass, fileCatalogDAO);
+        user = new UserImpl(username,pass, fileCatalogDAO);
         fileCatalogDAO.registerUser(user);
+    }
+    @Override
+    public synchronized void unRegisterUser(UserImpl userimpl) throws SQLException{
+        fileCatalogDAO.deleteUser(userimpl);
+    }
+    @Override
+    public synchronized UserImpl getUserRecord(String currentuser) throws SQLException {
+        System.out.println("At IMPL");
+        return fileCatalogDAO.findUser(currentuser);
     }
 
     @Override
@@ -43,14 +55,10 @@ FileCatalogDAO fileCatalogDAO;
     }
 
     @Override
-    public void login(ClientRemoteInterface clientRemoteInterface, Credentials cred) throws RemoteException {
+    public void login(ClientRemoteInterface clientRemoteInterface, Credentials cred) {
 
     }
 
-    @Override
-    public void uploadFile(long id, String filename) throws RemoteException {
-
-    }
 
     @Override
     public void closeConnection(long id) throws RemoteException, SQLException {
@@ -67,4 +75,6 @@ FileCatalogDAO fileCatalogDAO;
 
         return null;
     }
+
+
 }
