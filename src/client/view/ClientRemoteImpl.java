@@ -11,16 +11,13 @@ import java.sql.SQLException;
 
 public class ClientRemoteImpl implements Runnable {
     BufferedReader bufferedReader,serverResp;
-    BufferedWriter bufferedWriter;
-    BufferedOutputStream bufferedOutputStream;
-    ObjectInputStream objectInputStream;
-    PrintWriter printWriter;
     ServerRMIInterface sRemoteInterface;
     ObjectOutputStream outputStream;
     FileInputStream fInputStream;
     Socket clientlink = null;
     //private InetAddress host;
     private final int port=1234;
+    private final int fileport=1235;
     String host = null;
     int connectionId;
     private boolean usercommandrcvd = false;
@@ -70,21 +67,12 @@ public class ClientRemoteImpl implements Runnable {
                     case "upload":
                         sendCommand(readBytes);
                         System.out.println("USER COMMAND 1" + readBytes);
-                        //ObjectInputStream  objectInputStream = new ObjectInputStream(clientlink.getInputStream());
                         serverResp = new BufferedReader(new InputStreamReader(clientlink.getInputStream()));
-                        //Convert server response from bytes to data and print to console
-                        //byte[] serverRespArray = (byte[])objectInputStream.readObject();
+
                         String userCommand = serverResp.readLine();
                         System.out.println("ServerResponse:" +userCommand);
                         String filename = bufferedReader.readLine();
                         sendFile(filename);
-                        //String newString = new String(serverRespArray);
-                        //BufferedWriter log = new BufferedWriter(new OutputStreamWriter(System.out));
-                        //log.write(userCommand);
-                        //System.out.println("Log written to console");
-                        //System.out.println("Enter file name e.g hw.pdf or code.jpg\n");
-                        //String filename = bufferedReader.readLine();
-                        //sendFile(filename);
                         break;
                     case "unregister":
                         System.out.println("Enter username to unregister:");
@@ -106,12 +94,6 @@ public class ClientRemoteImpl implements Runnable {
 
 
     }
-    Writer getResponse(String responcename) throws IOException, ClassNotFoundException {
-        if(responcename != null){
-            return new PrintWriter(responcename);
-        }else
-        return new OutputStreamWriter(System.out);
-    }
 
     public void sendCommand(String receivedCMD) throws IOException {
         clientlink = new Socket(host, port);
@@ -126,7 +108,7 @@ public class ClientRemoteImpl implements Runnable {
 
     public void sendFile(String filename) throws IOException {
         try {
-            clientlink = new Socket(host, port);
+            clientlink = new Socket(host, fileport);
             outputStream = new ObjectOutputStream(clientlink.getOutputStream());
             fInputStream = new FileInputStream(filename);
 

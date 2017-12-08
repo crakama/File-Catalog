@@ -1,13 +1,9 @@
 package server.controller;
 
 import common.ServerTCPInterface;
-import server.model.FileCatalogDAO;
 
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.SQLException;
-import java.util.Scanner;
 
 /**
  * Contains implementation of all methods that were registered with the controller(ServerTCPInterface).
@@ -16,12 +12,7 @@ import java.util.Scanner;
  */
 
 public class ServerTCPImpl implements Runnable, ServerTCPInterface {
-    private static String datasource = "filecatalog";
-    private static String dbms = "mysql";
-    static final int port=1234;
     boolean connected;
-    static ServerSocket serverSocket;
-    static FileCatalogDAO fileCatalogDAO = null;
     private final Socket clientSocket;
     BufferedReader usercmdRvdIn= null;
     BufferedOutputStream reqFileName;
@@ -35,7 +26,7 @@ public class ServerTCPImpl implements Runnable, ServerTCPInterface {
     /**
      * Initialize server socket class with a specific port number in which the server will listen
      * for incoming connections. The client will use the same port to establish TCP connection to the server
-     *
+     * Threads here only handle user commands and response
      */
     @Override
     public void run() {
@@ -58,13 +49,14 @@ public class ServerTCPImpl implements Runnable, ServerTCPInterface {
 
             if(userCommand.equals("upload")){
                 System.out.println("Server received" + userCommand+ " request");
-                upLoadFile();
+                sendResponce();
+                //upLoadFile();
             }else if (userCommand.equals("download")){
                 System.out.println("Function not yet implemented!!");
             }
 
             //link.close();
-        } catch (IOException|ClassNotFoundException |SQLException e) {
+        } catch (IOException e) {
 
         }
     }
@@ -78,7 +70,7 @@ public class ServerTCPImpl implements Runnable, ServerTCPInterface {
      *@link.getInputStream() read data sent by the client from the socket.
      */
     @Override
-    public void upLoadFile() throws SQLException, ClassNotFoundException, IOException {
+    public void sendResponce() throws IOException {
         System.out.println("Upload initiated");
         PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream(),true);
         System.out.println("SERVER BEFORE before send" );
@@ -87,13 +79,8 @@ public class ServerTCPImpl implements Runnable, ServerTCPInterface {
         String reqFileName = "Enter file name e.g hw.pdf or code.jpg\\n";
         printWriter.println(reqFileName);
         printWriter.flush();
-
-        ObjectInputStream inputStream = new ObjectInputStream(clientSocket.getInputStream());
-        System.out.println("Input stream received from link");
-        byte[] filedata = (byte[])inputStream.readObject();
-        System.out.println("Byte data read");
-        fileCatalogDAO = new FileCatalogDAO(datasource,dbms,filedata);
-        System.out.println("Input stream 1 sent to DAO");
     }
+
+    //Should the file thread handle database operation instead?
 
 }

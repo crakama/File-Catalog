@@ -1,11 +1,14 @@
 package server.startup;
 
+import server.controller.FileServerImpl;
 import server.controller.ServerRMIImpl;
 import server.controller.ServerTCPImpl;
 import server.model.FileCatalogDAO;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -18,15 +21,12 @@ import java.sql.SQLException;
 public class CatalogServer {
     private static String datasource = "filecatalog";
     private static String dbms = "mysql";
-    static final int port=1234;
-    static ServerSocket serverSocket;
-    static FileCatalogDAO fileCatalogDAO = null;
+    private static final int port=1234;
+    private static final int fileport=1235;
+    private static ServerSocket serverSocket,fserverSocket;
 
     public CatalogServer(){ }
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        String hostName = null;
-        String hostIP = null;
-
         /**
          * @CatalogServer() Creates a new Instance of the class object(server) which implements
          * @startRegistry() method.
@@ -36,13 +36,14 @@ public class CatalogServer {
          */
         try {
             new CatalogServer().startRegistry();
-            System.out.println("SERVER IS RUNNING...");
+            System.out.println("RMI SERVER IS RUNNING...");
 
         } catch (MalformedURLException |RemoteException e) {
             System.err.println("SERVER STARTUP EXCEPTION:Could not start the server:-" + e.getMessage());
             e.printStackTrace();
         }
         new CatalogServer().initTCPConnection();
+
     }
 
 
@@ -67,12 +68,23 @@ public class CatalogServer {
 
     public void initTCPConnection(){
         try {
-            ServerSocket serverSocket = new ServerSocket(port);
+            System.out.println("TCP SERVER IS RUNNING...");
+            serverSocket = new ServerSocket(port);
             System.out.println("server socket acquired\n");
+
+            fserverSocket = new ServerSocket(fileport);
+            System.out.println("file server socket acquired\n");
+
             while(true){
+                //Connection for user commands
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Server accepted socket connection\n");
                 tcpClientsManager(clientSocket);
+
+                //Connection for file transfer
+                Socket fClientSocket = fserverSocket.accept();
+                System.out.println("Server accepted file transfer socket connection\n");
+                tcpFileManager(fClientSocket);
             }
         } catch (IOException e) {
             System.out.println("Unable to connect to port:" + port + "Already used!!!");
@@ -83,6 +95,15 @@ public class CatalogServer {
             System.out.println(e.toString());
         }
 
+    }
+
+
+    public void tcpFileManager(Socket clientSocket){
+        FileServerImpl serverTCP = new FileServerImpl(clientSocket);
+        Thread serverThread = new Thread(serverTCP);
+
+        System.out.println("New Server Thread Started on socket:" + clientSocket);
+        serverThread.start();
     }
 
     /**

@@ -9,7 +9,8 @@ import java.sql.SQLException;
  */
 public interface ServerTCPInterface {
 
-    void upLoadFile() throws SQLException, ClassNotFoundException, IOException;
+    //void upLoadFile() throws SQLException, ClassNotFoundException, IOException;
 
+    void sendResponce() throws SQLException, ClassNotFoundException, IOException;
 
 }
