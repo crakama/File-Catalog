@@ -2,17 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="df7f08d4-462b-4af0-b129-fd719983295d" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/server/controller/FileServerImpl.java" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/31bdf3ee-4393-4f35-9e85-41e15ed6ecbd.xml" afterPath="$PROJECT_DIR$/.idea/dataSources/31bdf3ee-4393-4f35-9e85-41e15ed6ecbd.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/out/production/FileCatalogueRMI/client/view/ClientRemoteImpl.class" afterPath="$PROJECT_DIR$/out/production/FileCatalogueRMI/client/view/ClientRemoteImpl.class" />
       <change beforePath="$PROJECT_DIR$/out/production/FileCatalogueRMI/common/ServerTCPInterface.class" afterPath="$PROJECT_DIR$/out/production/FileCatalogueRMI/common/ServerTCPInterface.class" />
       <change beforePath="$PROJECT_DIR$/out/production/FileCatalogueRMI/server/controller/ServerTCPImpl.class" afterPath="$PROJECT_DIR$/out/production/FileCatalogueRMI/server/controller/ServerTCPImpl.class" />
       <change beforePath="$PROJECT_DIR$/out/production/FileCatalogueRMI/server/startup/CatalogServer.class" afterPath="$PROJECT_DIR$/out/production/FileCatalogueRMI/server/startup/CatalogServer.class" />
-      <change beforePath="$PROJECT_DIR$/src/client/view/ClientRemoteImpl.java" afterPath="$PROJECT_DIR$/src/client/view/ClientRemoteImpl.java" />
-      <change beforePath="$PROJECT_DIR$/src/common/ServerTCPInterface.java" afterPath="$PROJECT_DIR$/src/common/ServerTCPInterface.java" />
-      <change beforePath="$PROJECT_DIR$/src/server/controller/ServerTCPImpl.java" afterPath="$PROJECT_DIR$/src/server/controller/ServerTCPImpl.java" />
-      <change beforePath="$PROJECT_DIR$/src/server/startup/CatalogServer.java" afterPath="$PROJECT_DIR$/src/server/startup/CatalogServer.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -410,7 +404,7 @@
       <workItem from="1512205639970" duration="58674000" />
       <workItem from="1512572604953" duration="39880000" />
       <workItem from="1512686076711" duration="5904000" />
-      <workItem from="1512730333905" duration="7006000" />
+      <workItem from="1512730333905" duration="7089000" />
     </task>
     <task id="LOCAL-00001" summary="Connection fixes">
       <created>1512173673797</created>
@@ -433,11 +427,18 @@
       <option name="project" value="LOCAL" />
       <updated>1512586025870</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Separate file transfer and user in TCP connections">
+      <created>1512738080039</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1512738080039</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="133605000" />
+    <option name="totallyTimeSpent" value="133688000" />
   </component>
   <component name="TodoView" selected-index="1">
     <todo-panel id="selected-file">
@@ -493,7 +494,8 @@
     <MESSAGE value="Connection fixes" />
     <MESSAGE value="Upload file to mysql database using TCP" />
     <MESSAGE value="Restructure files to MVC architecture" />
-    <option name="LAST_COMMIT_MESSAGE" value="Restructure files to MVC architecture" />
+    <MESSAGE value="Separate file transfer and user in TCP connections" />
+    <option name="LAST_COMMIT_MESSAGE" value="Separate file transfer and user in TCP connections" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
