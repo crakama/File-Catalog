@@ -2,6 +2,7 @@ package client.view;
 
 import common.ServerRMIInterface;
 import server.model.UserImpl;
+
 import java.io.*;
 import java.net.Socket;
 import java.rmi.Naming;
@@ -9,8 +10,14 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 public class ClientRemoteImpl implements Runnable {
-    BufferedReader bufferedReader;
+    BufferedReader bufferedReader,serverResp;
+    BufferedWriter bufferedWriter;
+    BufferedOutputStream bufferedOutputStream;
+    ObjectInputStream objectInputStream;
+    PrintWriter printWriter;
     ServerRMIInterface sRemoteInterface;
+    ObjectOutputStream outputStream;
+    FileInputStream fInputStream;
     Socket clientlink = null;
     //private InetAddress host;
     private final int port=1234;
@@ -21,6 +28,7 @@ public class ClientRemoteImpl implements Runnable {
 
     }
     public void start(){
+        //TO DO Initialize port and host here for all access
         if(usercommandrcvd){
             return;
         }
@@ -60,10 +68,23 @@ public class ClientRemoteImpl implements Runnable {
                         System.out.println("You Successfully registered as a new user !!!:");
                         break;
                     case "upload":
-                        System.out.println("Enter file name e.g hw.pdf or code.jpg");
+                        sendCommand(readBytes);
+                        System.out.println("USER COMMAND 1" + readBytes);
+                        //ObjectInputStream  objectInputStream = new ObjectInputStream(clientlink.getInputStream());
+                        serverResp = new BufferedReader(new InputStreamReader(clientlink.getInputStream()));
+                        //Convert server response from bytes to data and print to console
+                        //byte[] serverRespArray = (byte[])objectInputStream.readObject();
+                        String userCommand = serverResp.readLine();
+                        System.out.println("ServerResponse:" +userCommand);
                         String filename = bufferedReader.readLine();
                         sendFile(filename);
-
+                        //String newString = new String(serverRespArray);
+                        //BufferedWriter log = new BufferedWriter(new OutputStreamWriter(System.out));
+                        //log.write(userCommand);
+                        //System.out.println("Log written to console");
+                        //System.out.println("Enter file name e.g hw.pdf or code.jpg\n");
+                        //String filename = bufferedReader.readLine();
+                        //sendFile(filename);
                         break;
                     case "unregister":
                         System.out.println("Enter username to unregister:");
@@ -85,6 +106,19 @@ public class ClientRemoteImpl implements Runnable {
 
 
     }
+    Writer getResponse(String responcename) throws IOException, ClassNotFoundException {
+        if(responcename != null){
+            return new PrintWriter(responcename);
+        }else
+        return new OutputStreamWriter(System.out);
+    }
+
+    public void sendCommand(String receivedCMD) throws IOException {
+        clientlink = new Socket(host, port);
+       PrintWriter printWriter = new PrintWriter(clientlink.getOutputStream(),true);
+        System.out.println("USER COMMAND before send" + receivedCMD);
+        printWriter.println(receivedCMD);
+    }
     /**
      * ObjectOutputStream object to Send request to server using TCP socket
      * @param filename
@@ -93,8 +127,8 @@ public class ClientRemoteImpl implements Runnable {
     public void sendFile(String filename) throws IOException {
         try {
             clientlink = new Socket(host, port);
-            ObjectOutputStream out = new ObjectOutputStream(clientlink.getOutputStream());
-            FileInputStream fInputStream = new FileInputStream(filename);
+            outputStream = new ObjectOutputStream(clientlink.getOutputStream());
+            fInputStream = new FileInputStream(filename);
 
             //Convert file into bytes of array
             long filelen = (new File(filename)).length();
@@ -106,14 +140,16 @@ public class ClientRemoteImpl implements Runnable {
             fInputStream.close();
 
             //write byte array to socket
-            out.writeObject(filedata);
-            out.flush();
+            outputStream.writeObject(filedata);
+            outputStream.flush();
 
-            out.close();
-            fInputStream.close();
-        } catch (IOException e) {
-            System.out.println("Host Address Not Found:");
-            e.printStackTrace();
+        }finally {
+            if (fInputStream != null) {
+                fInputStream.close();
+            }
+            if (outputStream != null) {
+                outputStream.close();
+            }
         }
 
     }
