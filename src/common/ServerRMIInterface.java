@@ -2,10 +2,10 @@ package common;
 
 import server.model.UserImpl;
 
-import java.io.FileInputStream;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.List;
 
 
 /**
@@ -27,13 +27,14 @@ public interface ServerRMIInterface extends Remote  {
 
     void openConnection()throws RemoteException,SQLException,ClassNotFoundException;
 
-    void login(ClientRemoteInterface clientRemoteInterface, Credentials cred) throws RemoteException;
+    void login(FileInterface clientRemoteInterface, Credentials cred) throws RemoteException;
 
 
     void closeConnection(long id) throws RemoteException,SQLException;
 
-    void searchDB(int id, String searchString) throws RemoteException,SQLException;
+    List<? extends FileInterface> listFiles() throws RemoteException,SQLException;
 
     String getNextRow(int id)throws RemoteException,SQLException;
 
+    //void sendFileDetails(String filename, String owner, String accessP) throws RemoteException;
 }

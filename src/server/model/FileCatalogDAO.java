@@ -4,6 +4,8 @@ import common.UserInterface;
 
 import java.io.FileInputStream;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This Database Handler [data access object (DAO)], it encapsulates all database calls in the catalogue application.
@@ -11,7 +13,8 @@ import java.sql.*;
  */
 
 public class FileCatalogDAO {
-    private PreparedStatement createUserStmt,deleteUserStmt,findUserStmt,uploadFileStmt;
+    private PreparedStatement createUserStmt,deleteUserStmt,
+            listFilesStmt,findUserStmt,uploadFileStmt;
     Connection conn;
     private static final String USER_TABLE="USER";
     private static final String FILE_TABLE="file";
@@ -31,10 +34,10 @@ public class FileCatalogDAO {
     public FileCatalogDAO() {
 
     }
-
-    public FileCatalogDAO(String datasource, String dbms, byte[] filedata) throws SQLException, ClassNotFoundException {
+    public FileCatalogDAO(String datasource,String dbms,String filename, String owner,
+                          String accessPerm, byte[] filedata) throws SQLException, ClassNotFoundException {
         conn = connectToFileCatalogDB(datasource,dbms);
-        uploadfileDB(datasource,dbms,filedata);
+        uploadfileDB(filename,owner,accessPerm,filedata);
     }
 
     private Connection createDatasource(String datasource, String dbms) throws
@@ -47,7 +50,12 @@ public class FileCatalogDAO {
                     + PASS_COLUMN_NAME + " VARCHAR(32))");
 
             statement.executeUpdate("CREATE TABLE " + FILE_TABLE
-                                        + " (" + FILEB + " LONGBLOB )");
+                    + " (" + FNAME + " VARCHAR(32) PRIMARY KEY, "
+                    + FOWNER + " VARCHAR(32), "
+                    + ACCESS_P + " VARCHAR(32), "
+                    + FILEB + " LONGBLOB )");
+
+
 
         }
         return conn;
@@ -67,7 +75,24 @@ public class FileCatalogDAO {
         }
     }
 
+    //Set resultset setter
+    public List<UserImpl> listFiles() throws SQLException {
+        List<UserImpl> filelist = new ArrayList<>();
+        listFilesStmt = conn.prepareStatement("SELECT * FROM file");
+        ResultSet resultSet = listFilesStmt.executeQuery();
+        while(resultSet.next()){
+            filelist.add(new UserImpl(resultSet.getString("filename"),
+                                        resultSet.getString("filesize"),
+                                        resultSet.getString("fileowner"),
+                                        resultSet.getString("accessPerm")));
+        }
+        return  filelist;
+    }
+
     public UserImpl findUser(String username) throws SQLException{
+        findUserStmt = conn.prepareStatement("SELECT * FROM "
+                + USER_TABLE
+                + " WHERE name = ?");
         findUserStmt.setString(1,username);
         ResultSet rs = findUserStmt.executeQuery();
         if(rs.next()){
@@ -75,14 +100,19 @@ public class FileCatalogDAO {
         }
         return null;
     }
+
     public void deleteUser(UserImpl userimpl) throws SQLException{
         deleteUserStmt.setString(1,userimpl.getName());
         deleteUserStmt.executeUpdate();
     }
-    public void uploadfileDB(String datasource, String dbms, byte[] fdatabytes) throws SQLException, ClassNotFoundException {
+    public void uploadfileDB(String filename, String owner,
+                             String accessPerm, byte[] fdatabytes) throws SQLException, ClassNotFoundException {
 
-        uploadFileStmt = conn.prepareStatement("INSERT INTO file (files) values (?)");
-        uploadFileStmt.setBytes(1,fdatabytes);
+        uploadFileStmt = conn.prepareStatement("INSERT INTO file values (?, ?, ?, ?)");
+        uploadFileStmt.setString(1,filename);
+        uploadFileStmt.setString(2,owner);
+        uploadFileStmt.setString(3,accessPerm);
+        uploadFileStmt.setBytes(4,fdatabytes);
         uploadFileStmt.executeUpdate();
     }
 

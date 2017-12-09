@@ -1,14 +1,16 @@
 package server.controller;
 
-import common.ClientRemoteInterface;
+import common.FileInterface;
 import common.Credentials;
 import common.ServerRMIInterface;
+import common.UserInterface;
 import server.model.FileCatalogDAO;
 import server.model.UserImpl;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  *
@@ -53,7 +55,7 @@ FileCatalogDAO fileCatalogDAO;
     }
 
     @Override
-    public void login(ClientRemoteInterface clientRemoteInterface, Credentials cred) {
+    public void login(FileInterface clientRemoteInterface, Credentials cred) {
 
     }
 
@@ -64,8 +66,8 @@ FileCatalogDAO fileCatalogDAO;
     }
 
     @Override
-    public void searchDB(int id, String searchString) throws RemoteException, SQLException {
-
+    public List<? extends FileInterface> listFiles() throws RemoteException, SQLException {
+        return fileCatalogDAO.listFiles();
     }
 
     @Override
@@ -74,5 +76,11 @@ FileCatalogDAO fileCatalogDAO;
         return null;
     }
 
+ /*   @Override
+    public void sendFileDetails(String filename, String owner, String accessP) throws RemoteException {
+        fileCatalogDAO = new FileCatalogDAO(filename,owner,accessP);
+    }*/
 
+  /*  public FileCatalogDAO(String datasource,String dbms,String filename, String owner,
+                          String accessPerm, byte[] filedata)*/
 }

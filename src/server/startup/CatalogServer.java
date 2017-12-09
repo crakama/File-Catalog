@@ -24,8 +24,14 @@ public class CatalogServer {
     private static final int port=1234;
     private static final int fileport=1235;
     private static ServerSocket serverSocket,fserverSocket;
+    private String filename,owner,accessPerm;
 
     public CatalogServer(){ }
+
+   // public CatalogServer(String filename, String owner, String accessPerm) {
+
+   // }
+
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         /**
          * @CatalogServer() Creates a new Instance of the class object(server) which implements
@@ -97,8 +103,8 @@ public class CatalogServer {
 
     }
 
-
     public void tcpFileManager(Socket clientSocket){
+
         FileServerImpl serverTCP = new FileServerImpl(clientSocket);
         Thread serverThread = new Thread(serverTCP);
 

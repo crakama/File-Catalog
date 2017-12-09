@@ -1,13 +1,18 @@
 package client.view;
 
+import common.FileInterface;
 import common.ServerRMIInterface;
+import common.UserInterface;
+import server.controller.FileServerImpl;
 import server.model.UserImpl;
+import server.startup.CatalogServer;
 
 import java.io.*;
 import java.net.Socket;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.List;
 
 public class ClientRemoteImpl implements Runnable {
     BufferedReader bufferedReader,serverResp;
@@ -50,8 +55,8 @@ public class ClientRemoteImpl implements Runnable {
         while(usercommandrcvd){
             try{
                 System.out.println("Enter Command to start the program:");
-                String readBytes = bufferedReader.readLine();
-                switch (readBytes){
+                String usercmd = bufferedReader.readLine();
+                switch (usercmd){
 
                     case "register":
                         System.out.println("You can now proceed with registration:");
@@ -65,15 +70,30 @@ public class ClientRemoteImpl implements Runnable {
                         System.out.println("You Successfully registered as a new user !!!:");
                         break;
                     case "upload":
-                        sendCommand(readBytes);
-                        System.out.println("USER COMMAND 1" + readBytes);
+                        sendCommand(usercmd);
+                        System.out.println("USER COMMAND 1" + usercmd);
                         serverResp = new BufferedReader(new InputStreamReader(clientlink.getInputStream()));
 
                         String userCommand = serverResp.readLine();
                         System.out.println("ServerResponse:" +userCommand);
                         String filename = bufferedReader.readLine();
-                        sendFile(filename);
+                        System.out.println("Enter File Access Permission: public or private");
+                        String accessP = bufferedReader.readLine();
+                        //TO DO pick current logged in user name
+                        String owner = "user";
+                        System.out.println("FILE NAME "+filename);
+                        //sRemoteInterface.sendFileDetails(filename,owner,accessP);
+                        sendFile(filename,owner,accessP);
                         break;
+                    case "list":
+                        // Calling the remote method using the obtained object
+                        List<? extends FileInterface> files = sRemoteInterface.listFiles();
+                        for(FileInterface file : files){
+                            System.out.println("File Name: " + file.getFileName());
+                            System.out.println("File Size: " + file.getSize());
+                            System.out.println("File Owner: " + file.getFileOwner());
+                            System.out.println("Access Permission: " + file.getFileOwner());
+                        }
                     case "unregister":
                         System.out.println("Enter username to unregister:");
                         String unreguser = bufferedReader.readLine();
@@ -104,13 +124,18 @@ public class ClientRemoteImpl implements Runnable {
     /**
      * ObjectOutputStream object to Send request to server using TCP socket
      * @param filename
+     * @paramreadBytes
      */
 
-    public void sendFile(String filename) throws IOException {
+    public void sendFile(String filename,String owner,String accessPerm) throws IOException {
         try {
             clientlink = new Socket(host, fileport);
             outputStream = new ObjectOutputStream(clientlink.getOutputStream());
             fInputStream = new FileInputStream(filename);
+
+            //new CatalogServer(filename,owner,accessPerm);
+
+            System.out.println("FILE NAME PASSED at CRI");
 
             //Convert file into bytes of array
             long filelen = (new File(filename)).length();
@@ -179,7 +204,7 @@ public class ClientRemoteImpl implements Runnable {
         try {
             // Execute the query.
           String  filename = bufferedReader.readLine();
-          sRemoteInterface.searchDB(connectionId,filename );
+          //sRemoteInterface.listFiles();
 
           //Get and display the result set
             result = sRemoteInterface.getNextRow(connectionId);

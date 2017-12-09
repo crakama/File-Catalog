@@ -1,14 +1,17 @@
 package common;
 
-import server.model.FileCatalogDAO;
-
 import java.io.Serializable;
 
 public interface UserInterface extends Serializable {
-    // Food for thought: Client should use this to set name and pass from CMD
-
-
+    // Get user records
     String getName();
 
     String getPassword();
+
+    // Get file records
+    String getFileName();
+    String getSize();
+    String getAccessPerm();
+
+    String getFileOwner();
 }

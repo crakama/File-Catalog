@@ -918,32 +918,5 @@
       <Charset>utf8mb4</Charset>
       <DefaultForCharset>0</DefaultForCharset>
     </collation>
-    <table id="232" parent="3" name="file">
-      <Engine>InnoDB</Engine>
-    </table>
-    <table id="233" parent="3" name="user">
-      <Engine>InnoDB</Engine>
-    </table>
-    <column id="234" parent="232" name="files">
-      <Position>1</Position>
-      <DataType>longblob|0</DataType>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="235" parent="233" name="USERNAME">
-      <Position>1</Position>
-      <DataType>varchar(32)|0</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="236" parent="233" name="PASS">
-      <Position>2</Position>
-      <DataType>varchar(32)|0</DataType>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <key id="237" parent="233" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>USERNAME</ColNames>
-      <Primary>1</Primary>
-    </key>
   </database-model>
 </dataSource>
