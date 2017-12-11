@@ -24,13 +24,17 @@ public class CatalogServer {
     private static final int port=1234;
     private static final int fileport=1235;
     private static ServerSocket serverSocket,fserverSocket;
-    private String filename,owner,accessPerm;
+     String filename,owner,accessPerm;
+    int size;
 
     public CatalogServer(){ }
 
-   // public CatalogServer(String filename, String owner, String accessPerm) {
-
-   // }
+   public CatalogServer(String filename, int size, String owner, String accessPerm) {
+       this.filename = filename;
+       this.size = size;
+       this.owner = owner;
+       this.accessPerm = accessPerm;
+   }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         /**
@@ -104,6 +108,8 @@ public class CatalogServer {
     }
 
     public void tcpFileManager(Socket clientSocket){
+
+        //use getters to read data sent by user
 
         FileServerImpl serverTCP = new FileServerImpl(clientSocket);
         Thread serverThread = new Thread(serverTCP);

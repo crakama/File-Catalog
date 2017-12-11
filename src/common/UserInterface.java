@@ -9,9 +9,9 @@ public interface UserInterface extends Serializable {
     String getPassword();
 
     // Get file records
-    String getFileName();
+ /*   String getFileName();
     String getSize();
     String getAccessPerm();
 
-    String getFileOwner();
+    String getFileOwner();*/
 }

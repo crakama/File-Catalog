@@ -1,6 +1,7 @@
 package server.model;
 
 import common.UserInterface;
+import server.controller.FileServerImpl;
 
 import java.io.FileInputStream;
 import java.sql.*;
@@ -35,9 +36,9 @@ public class FileCatalogDAO {
 
     }
     public FileCatalogDAO(String datasource,String dbms,String filename, String owner,
-                          String accessPerm, byte[] filedata) throws SQLException, ClassNotFoundException {
+                          String accessPerm, int size, byte[] filedata) throws SQLException, ClassNotFoundException {
         conn = connectToFileCatalogDB(datasource,dbms);
-        uploadfileDB(filename,owner,accessPerm,filedata);
+        uploadfileDB(filename,owner,accessPerm,size,filedata);
     }
 
     private Connection createDatasource(String datasource, String dbms) throws
@@ -52,6 +53,7 @@ public class FileCatalogDAO {
             statement.executeUpdate("CREATE TABLE " + FILE_TABLE
                     + " (" + FNAME + " VARCHAR(32) PRIMARY KEY, "
                     + FOWNER + " VARCHAR(32), "
+                    + FSIZE + " INT , "
                     + ACCESS_P + " VARCHAR(32), "
                     + FILEB + " LONGBLOB )");
 
@@ -75,14 +77,14 @@ public class FileCatalogDAO {
         }
     }
 
-    //Set resultset setter
-    public List<UserImpl> listFiles() throws SQLException {
-        List<UserImpl> filelist = new ArrayList<>();
+    //Set resultset TO list of type UserImpl to be accessed by client
+    public List<FileServerImpl> listFiles() throws SQLException {
+        List<FileServerImpl> filelist = new ArrayList<>();
         listFilesStmt = conn.prepareStatement("SELECT * FROM file");
         ResultSet resultSet = listFilesStmt.executeQuery();
         while(resultSet.next()){
-            filelist.add(new UserImpl(resultSet.getString("filename"),
-                                        resultSet.getString("filesize"),
+            filelist.add(new FileServerImpl(resultSet.getString("filename"),
+                                        resultSet.getInt("filesize"),
                                         resultSet.getString("fileowner"),
                                         resultSet.getString("accessPerm")));
         }
@@ -106,13 +108,14 @@ public class FileCatalogDAO {
         deleteUserStmt.executeUpdate();
     }
     public void uploadfileDB(String filename, String owner,
-                             String accessPerm, byte[] fdatabytes) throws SQLException, ClassNotFoundException {
+                             String accessPerm, int size, byte[] fdatabytes) throws SQLException, ClassNotFoundException {
 
-        uploadFileStmt = conn.prepareStatement("INSERT INTO file values (?, ?, ?, ?)");
+        uploadFileStmt = conn.prepareStatement("INSERT INTO file values (?, ?, ?, ?, ?)");
         uploadFileStmt.setString(1,filename);
         uploadFileStmt.setString(2,owner);
         uploadFileStmt.setString(3,accessPerm);
-        uploadFileStmt.setBytes(4,fdatabytes);
+        uploadFileStmt.setInt(4,size);
+        uploadFileStmt.setBytes(5,fdatabytes);
         uploadFileStmt.executeUpdate();
     }
 

@@ -1,10 +1,14 @@
 package server.model;
 
-import common.FileInterface;
 import common.UserInterface;
 
-public class UserImpl implements UserInterface, FileInterface {
-    private  String name, pass, filename, filesize,fileowner,accessPerm;
+public class UserImpl implements UserInterface {
+    private  String name;
+    private String pass;
+    private String filename;
+    private int filesize;
+    private String fileowner;
+    private String accessPerm;
     FileCatalogDAO fileCatalogDAO;
 
     /**
@@ -23,12 +27,17 @@ public class UserImpl implements UserInterface, FileInterface {
 
     }
 
-    public UserImpl(String filename, String filesize, String fileowner, String accessPerm){
-        //File details
+    public UserImpl(String filename, int filesize, String fileowner, String accessPerm){
+        //FileInfo details from DB
         this.filename = filename;
         this.filesize = filesize;
         this.fileowner = fileowner;
         this.accessPerm = accessPerm;
+    }
+
+    //Used by user to set initial file info
+    public UserImpl() {
+
     }
 
 
@@ -42,25 +51,8 @@ public class UserImpl implements UserInterface, FileInterface {
         return pass;
     }
 
-    @Override
-    public String getFileName() {
-        return filename;
-    }
 
-    @Override
-    public String getSize() {
-        return filesize;
-    }
 
-    @Override
-    public String getAccessPerm() {
-        return accessPerm ;
-    }
-
-    @Override
-    public String getFileOwner() {
-        return fileowner;
-    }
 
 
 }

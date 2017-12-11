@@ -1,9 +1,13 @@
 package common;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.List;
 
-public interface FileInterface extends Remote{
+public interface FileInterface extends Remote {
 
     /**
      * Remote methods that a server can call on a client
@@ -13,8 +17,16 @@ public interface FileInterface extends Remote{
      */
     // Get file records
     String getFileName();
-    String getSize();
+    int getSize();
     String getAccessPerm();
-
     String getFileOwner();
+
+    void receivedFile() throws SQLException, ClassNotFoundException, IOException;
+
+    //public List<FileInfo> getFiles() throws RemoteException;
+    void setFileName(String fileName);
+    void setAccessPerm(String accessPerm);
+    void setFileOwner(String fileOwner);
+    void  setSize(int size);
+
 }

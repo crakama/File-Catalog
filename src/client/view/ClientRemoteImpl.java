@@ -1,22 +1,23 @@
 package client.view;
 
+import common.ClientRemoteInterface;
+import common.FileInfo;
 import common.FileInterface;
 import common.ServerRMIInterface;
-import common.UserInterface;
-import server.controller.FileServerImpl;
 import server.model.UserImpl;
-import server.startup.CatalogServer;
 
 import java.io.*;
 import java.net.Socket;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ClientRemoteImpl implements Runnable {
+public class ClientRemoteImpl implements Runnable, ClientRemoteInterface {
     BufferedReader bufferedReader,serverResp;
     ServerRMIInterface sRemoteInterface;
+    FileInterface fileInterface;
     ObjectOutputStream outputStream;
     FileInputStream fInputStream;
     Socket clientlink = null;
@@ -73,25 +74,31 @@ public class ClientRemoteImpl implements Runnable {
                         sendCommand(usercmd);
                         System.out.println("USER COMMAND 1" + usercmd);
                         serverResp = new BufferedReader(new InputStreamReader(clientlink.getInputStream()));
-
                         String userCommand = serverResp.readLine();
-                        System.out.println("ServerResponse:" +userCommand);
+
+                        System.out.println("ServerResponse:" +userCommand); //Enter file name
                         String filename = bufferedReader.readLine();
-                        System.out.println("Enter File Access Permission: public or private");
+
+
+                        System.out.println("Enter FileInfo Access Permission: public or private");
                         String accessP = bufferedReader.readLine();
                         //TO DO pick current logged in user name
                         String owner = "user";
+                        int size = 50;
                         System.out.println("FILE NAME "+filename);
-                        //sRemoteInterface.sendFileDetails(filename,owner,accessP);
-                        sendFile(filename,owner,accessP);
+
+                        //getFileDetails();
+                        //System.out.println("FILE DETAILS PASSED at CRI to List");
+                        sRemoteInterface.sendFileDetails(filename,size,owner,accessP);
+                        sendFile(filename);
                         break;
                     case "list":
                         // Calling the remote method using the obtained object
                         List<? extends FileInterface> files = sRemoteInterface.listFiles();
                         for(FileInterface file : files){
-                            System.out.println("File Name: " + file.getFileName());
-                            System.out.println("File Size: " + file.getSize());
-                            System.out.println("File Owner: " + file.getFileOwner());
+                            System.out.println("FileInfo Name: " + file.getFileName());
+                            System.out.println("FileInfo Size: " + file.getSize());
+                            System.out.println("FileInfo Owner: " + file.getFileOwner());
                             System.out.println("Access Permission: " + file.getFileOwner());
                         }
                     case "unregister":
@@ -121,21 +128,54 @@ public class ClientRemoteImpl implements Runnable {
         System.out.println("USER COMMAND before send" + receivedCMD);
         printWriter.println(receivedCMD);
     }
+
+    @Override
+    public List<FileInfo> getFileDetails() throws IOException {
+        bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+       // String filename = bufferedReader.readLine();
+        System.out.println("Enter FileInfo Access Permission: public or private");
+        String accessP = bufferedReader.readLine();
+        //TO DO pick current logged in user name
+        String owner = "user";
+        int size = 50;
+        //System.out.println("FILE NAME "+filename);
+        List<FileInfo> fileInfos = new ArrayList<FileInfo>();
+
+        //Get data from user and return a list of file details
+        FileInfo fileInfo = new FileInfo();
+       // fileInfo.setFilename(filename);
+        fileInfo.setFileowner(owner);
+        fileInfo.setSize(size);
+        fileInfo.setfAccessP(accessP);
+        fileInfos.add(fileInfo);
+        return fileInfos;
+    }
     /**
      * ObjectOutputStream object to Send request to server using TCP socket
-     * @param filename
+     * @paramfilename
      * @paramreadBytes
      */
+    public void sendFile(String filename) throws IOException {
+        //Use a getter to get file name
 
-    public void sendFile(String filename,String owner,String accessPerm) throws IOException {
+ /*       List<FileInfo> ls = (List) new ClientRemoteImpl().getFileDetails();
+        for(FileInfo fi : ls){
+            String fname = fi.getFName();
+        serverResp = new BufferedReader(new InputStreamReader(clientlink.getInputStream()));
+        String userCommand = serverResp.readLine();
+
+        System.out.println("ServerResponse:" +userCommand); //Enter file name
+        String filename = bufferedReader.readLine();
+
+        FileInfo fileInfo = new FileInfo();
+        fileInfo.setFilename(filename);*/
+
         try {
             clientlink = new Socket(host, fileport);
             outputStream = new ObjectOutputStream(clientlink.getOutputStream());
             fInputStream = new FileInputStream(filename);
 
             //new CatalogServer(filename,owner,accessPerm);
-
-            System.out.println("FILE NAME PASSED at CRI");
 
             //Convert file into bytes of array
             long filelen = (new File(filename)).length();
@@ -158,8 +198,9 @@ public class ClientRemoteImpl implements Runnable {
                 outputStream.close();
             }
         }
-
+        //}
     }
+
 
     /**
      * Client gets reference to the remote object

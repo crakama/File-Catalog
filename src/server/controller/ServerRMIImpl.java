@@ -38,6 +38,11 @@ FileCatalogDAO fileCatalogDAO;
         user = new UserImpl(username,pass, fileCatalogDAO);
         fileCatalogDAO.registerUser(user);
     }
+
+    @Override
+    public void sendFileDetails(String filename, int size, String owner, String accessP) throws RemoteException {
+
+    }
     @Override
     public synchronized void unRegisterUser(UserImpl userimpl) throws SQLException{
         fileCatalogDAO.deleteUser(userimpl);
@@ -75,6 +80,8 @@ FileCatalogDAO fileCatalogDAO;
 
         return null;
     }
+
+
 
  /*   @Override
     public void sendFileDetails(String filename, String owner, String accessP) throws RemoteException {

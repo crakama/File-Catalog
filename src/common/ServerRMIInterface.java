@@ -28,7 +28,7 @@ public interface ServerRMIInterface extends Remote  {
     void openConnection()throws RemoteException,SQLException,ClassNotFoundException;
 
     void login(FileInterface clientRemoteInterface, Credentials cred) throws RemoteException;
-
+    //void sendFileDetails() throws RemoteException;
 
     void closeConnection(long id) throws RemoteException,SQLException;
 
@@ -36,5 +36,5 @@ public interface ServerRMIInterface extends Remote  {
 
     String getNextRow(int id)throws RemoteException,SQLException;
 
-    //void sendFileDetails(String filename, String owner, String accessP) throws RemoteException;
+    void sendFileDetails(String filename, int size,String owner, String accessP) throws RemoteException;
 }
