@@ -47,7 +47,7 @@ public class ServerTCPImpl implements Runnable, ServerTCPInterface {
             String userCommand = usercmdRvdIn.readLine();
             System.out.println("userCommand" + userCommand);
 
-            if(userCommand.equals("upload")){
+            if(userCommand.equals("uploadfile")){
                 System.out.println("Server received" + userCommand+ " request");
                 sendResponce();
                 //upLoadFile();

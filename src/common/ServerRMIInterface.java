@@ -36,4 +36,5 @@ public interface ServerRMIInterface extends Remote  {
 
     String getNextRow(int id)throws RemoteException,SQLException;
 
+    void uploadFileInfo(String fname, String fowner, String faccessmode, int fsize) throws RemoteException, SQLException;
 }

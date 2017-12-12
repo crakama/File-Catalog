@@ -2,7 +2,6 @@ package server.model;
 
 import common.UserInterface;
 
-import java.io.FileInputStream;
 import java.sql.*;
 
 /**
@@ -11,17 +10,19 @@ import java.sql.*;
  */
 
 public class FileCatalogDAO {
-    private PreparedStatement createUserStmt,deleteUserStmt,findUserStmt,uploadFileStmt;
+    private PreparedStatement createUserStmt,deleteUserStmt,findUserStmt,
+            uploadFileStmt, createFileInfo;
     Connection conn;
     private static final String USER_TABLE="USER";
     private static final String FILE_TABLE="file";
+    private static final String FILEINFO_TABLE="fileinfo";
     private static final String USER_COLUMN_NAME="USERNAME";
     private static final String PASS_COLUMN_NAME ="PASS";
     private static final String FILEB ="files";
-    private static final String FNAME ="FNAME";
-    private static final String FSIZE ="FSIZE";
-    private static final String FOWNER ="FOWNER";
-    private static final String ACCESS_P ="ACCESS_P";
+    private static final String FNAME ="fname";
+    private static final String FSIZE ="fsize";
+    private static final String FOWNER ="fowner";
+    private static final String ACCESS_P ="faccessPerm";
 
     public FileCatalogDAO(String datasource, String dbms) throws SQLException, ClassNotFoundException {
         conn = createDatasource(datasource,dbms);
@@ -47,7 +48,13 @@ public class FileCatalogDAO {
                     + PASS_COLUMN_NAME + " VARCHAR(32))");
 
             statement.executeUpdate("CREATE TABLE " + FILE_TABLE
-                                        + " (" + FILEB + " LONGBLOB )");
+                    + " (" + FILEB + " LONGBLOB )");
+
+            statement.executeUpdate("CREATE TABLE " + FILEINFO_TABLE
+                    + " (" + FNAME + " VARCHAR(32), "
+                    + FOWNER + " VARCHAR(32), "
+                    + ACCESS_P + " VARCHAR(32), "
+                    + FSIZE + " INT)");
 
         }
         return conn;
@@ -64,6 +71,17 @@ public class FileCatalogDAO {
         int rows = createUserStmt.executeUpdate();
         if(rows != 1){
             System.out.println("Unable to register new user!!");
+        }
+    }
+
+    public void uploadFileInfo(UserInterface fileInterface) throws SQLException {
+        createFileInfo.setString(1, fileInterface.getFName());
+        createFileInfo.setString(2,fileInterface.getFowner());
+        createFileInfo.setString(3, fileInterface.getFaccessMode());
+        createFileInfo.setInt(4,fileInterface.getFsize());
+        int rows = createFileInfo.executeUpdate();
+        if(rows != 1){
+            System.out.println("Unable to Add new file details!!");
         }
     }
 
@@ -90,24 +108,22 @@ public class FileCatalogDAO {
         createUserStmt = conn.prepareStatement("INSERT INTO " + USER_TABLE + " VALUES(?, ?)");
 
         deleteUserStmt = conn.prepareStatement("DELETE FROM "
-                                                    + USER_TABLE
-                                                    + " WHERE name = ?");
+                + USER_TABLE
+                + " WHERE name = ?");
 
         findUserStmt = conn.prepareStatement("SELECT * FROM "
-                                                    + USER_TABLE
-                                                    + " WHERE name = ?");
-
-
-/*        uploadFileStmt = conn.prepareStatement("INSERT INTO "
-                + FILE_TABLE + " VALUES (? )");*/
-        //uploadFileStmt = conn.prepareStatement("INSERT INTO file (files) values (?)");
+                + USER_TABLE
+                + " WHERE name = ?");
+        createFileInfo = conn.prepareStatement("INSERT INTO " + FILEINFO_TABLE + " VALUES(?, ?, ?, ?)");
 
     }
 
 
-    private boolean tableExists(Connection connection) throws SQLException {
+
+
+    private boolean tableExists(Connection conn) throws SQLException {
         int tableNameColumn = 3;
-        DatabaseMetaData dbm = connection.getMetaData();
+        DatabaseMetaData dbm = conn.getMetaData();
         try (ResultSet rs = dbm.getTables(null, null, null, null)) {
             for (; rs.next();) {
                 if (rs.getString(tableNameColumn).equals(USER_TABLE)) {

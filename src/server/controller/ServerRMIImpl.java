@@ -19,7 +19,7 @@ import java.sql.SQLException;
 public class ServerRMIImpl extends UnicastRemoteObject implements ServerRMIInterface,Serializable {
 
 FileCatalogDAO fileCatalogDAO;
-    UserImpl user;
+    UserImpl user,file;
     private String datasource, dbms;
 
     public ServerRMIImpl(String datasource, String dbms) throws RemoteException, SQLException, ClassNotFoundException {
@@ -36,6 +36,12 @@ FileCatalogDAO fileCatalogDAO;
         user = new UserImpl(username,pass, fileCatalogDAO);
         fileCatalogDAO.registerUser(user);
     }
+    @Override
+    public synchronized void uploadFileInfo(String fname, String fowner, String faccessmode, int fsize) throws SQLException {
+        file = new UserImpl(fname, fowner,faccessmode,fsize,fileCatalogDAO);
+        fileCatalogDAO.uploadFileInfo(file);
+    }
+
     @Override
     public synchronized void unRegisterUser(UserImpl userimpl) throws SQLException{
         fileCatalogDAO.deleteUser(userimpl);
@@ -73,6 +79,8 @@ FileCatalogDAO fileCatalogDAO;
 
         return null;
     }
+
+
 
 
 }

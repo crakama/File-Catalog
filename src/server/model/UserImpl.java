@@ -3,7 +3,8 @@ package server.model;
 import common.UserInterface;
 
 public class UserImpl implements UserInterface {
-    private  String name, pass;
+    private  String name, pass,fname,fowner,faccessmode;
+    private  int fsize;
     FileCatalogDAO fileCatalogDAO;
 
     /**
@@ -19,6 +20,14 @@ public class UserImpl implements UserInterface {
         this.fileCatalogDAO = fileCatalogDAO;
     }
 
+    public UserImpl(String fname, String fowner, String faccessmode, int fsize, FileCatalogDAO fileCatalogdao) {
+        this.fname = fname;
+        this.fowner = fowner;
+        this.faccessmode = faccessmode;
+        this.fsize = fsize;
+        this.fileCatalogDAO = fileCatalogdao;
+    }
+
 
     @Override
     public String getName() {
@@ -30,5 +39,20 @@ public class UserImpl implements UserInterface {
         return pass;
     }
 
-
+    @Override
+    public String getFName() {
+        return fname;
+    }
+    @Override
+    public String getFowner() {
+        return fowner;
+    }
+    @Override
+    public String getFaccessMode() {
+        return faccessmode;
+    }
+    @Override
+    public int getFsize() {
+        return fsize;
+    }
 }

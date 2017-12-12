@@ -65,6 +65,18 @@ public class ClientRemoteImpl implements Runnable {
                         System.out.println("You Successfully registered as a new user !!!:");
                         break;
                     case "upload":
+                        System.out.println("Enter file Name e.g hw.pdf or code.jpg:");
+                        String fname = bufferedReader.readLine();
+                        int fsize= 50;
+                        System.out.println("Enter file Access Mode:");
+                        String faccessmode = bufferedReader.readLine();
+
+                        String fowner = "user";
+                        System.out.println(fname + fowner + faccessmode + fsize);
+                        sRemoteInterface.uploadFileInfo(fname,fowner,faccessmode,fsize);
+
+                        break;
+                    case "uploadfile":
                         sendCommand(readBytes);
                         System.out.println("USER COMMAND 1" + readBytes);
                         serverResp = new BufferedReader(new InputStreamReader(clientlink.getInputStream()));
