@@ -4,17 +4,8 @@
     <list default="true" id="df7f08d4-462b-4af0-b129-fd719983295d" name="Default" comment="Separate file transfer and user in TCP connections">
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/31bdf3ee-4393-4f35-9e85-41e15ed6ecbd.xml" afterPath="$PROJECT_DIR$/.idea/dataSources/31bdf3ee-4393-4f35-9e85-41e15ed6ecbd.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/out/production/FileCatalogueRMI/client/view/ClientRemoteImpl.class" afterPath="$PROJECT_DIR$/out/production/FileCatalogueRMI/client/view/ClientRemoteImpl.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/FileCatalogueRMI/server/controller/FileServerImpl.class" afterPath="$PROJECT_DIR$/out/production/FileCatalogueRMI/server/controller/FileServerImpl.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/FileCatalogueRMI/server/controller/ServerTCPImpl.class" afterPath="$PROJECT_DIR$/out/production/FileCatalogueRMI/server/controller/ServerTCPImpl.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/FileCatalogueRMI/server/startup/CatalogServer.class" afterPath="$PROJECT_DIR$/out/production/FileCatalogueRMI/server/startup/CatalogServer.class" />
-      <change beforePath="$PROJECT_DIR$/src/client/view/ClientRemoteImpl.java" afterPath="$PROJECT_DIR$/src/client/view/ClientRemoteImpl.java" />
-      <change beforePath="$PROJECT_DIR$/src/common/ServerRMIInterface.java" afterPath="$PROJECT_DIR$/src/common/ServerRMIInterface.java" />
-      <change beforePath="$PROJECT_DIR$/src/common/UserInterface.java" afterPath="$PROJECT_DIR$/src/common/UserInterface.java" />
-      <change beforePath="$PROJECT_DIR$/src/server/controller/ServerRMIImpl.java" afterPath="$PROJECT_DIR$/src/server/controller/ServerRMIImpl.java" />
-      <change beforePath="$PROJECT_DIR$/src/server/controller/ServerTCPImpl.java" afterPath="$PROJECT_DIR$/src/server/controller/ServerTCPImpl.java" />
+      <change beforePath="$PROJECT_DIR$/out/production/FileCatalogueRMI/server/model/FileCatalogDAO.class" afterPath="$PROJECT_DIR$/out/production/FileCatalogueRMI/server/model/FileCatalogDAO.class" />
       <change beforePath="$PROJECT_DIR$/src/server/model/FileCatalogDAO.java" afterPath="$PROJECT_DIR$/src/server/model/FileCatalogDAO.java" />
-      <change beforePath="$PROJECT_DIR$/src/server/model/UserImpl.java" afterPath="$PROJECT_DIR$/src/server/model/UserImpl.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -49,20 +40,6 @@
         <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
         <item name="filecatalog: schema" type="c314c289:MysqlImplModel$Schema" />
       </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="filecatalog@localhost" type="feb32156:DbDataSourceImpl" />
-        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
-        <item name="filecatalog: schema" type="c314c289:MysqlImplModel$Schema" />
-        <item name="file: table" type="98d5ac3d:MysqlImplModel$Table" />
-      </path>
-      <path>
-        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
-        <item name="filecatalog@localhost" type="feb32156:DbDataSourceImpl" />
-        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
-        <item name="filecatalog: schema" type="c314c289:MysqlImplModel$Schema" />
-        <item name="fileinfo: table" type="98d5ac3d:MysqlImplModel$Table" />
-      </path>
     </expand>
     <select />
   </component>
@@ -86,7 +63,7 @@
       <file leaf-file-name="CatalogServer.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/server/startup/CatalogServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="167">
+            <state relative-caret-position="196">
               <caret line="63" column="0" lean-forward="false" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="0" />
               <folding />
             </state>
@@ -130,8 +107,8 @@
       <file leaf-file-name="ServerRMIImpl.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/server/controller/ServerRMIImpl.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="139">
-              <caret line="41" column="0" lean-forward="false" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+            <state relative-caret-position="196">
+              <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -158,30 +135,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FileCatalogDAO.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="FileCatalogDAO.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/server/model/FileCatalogDAO.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1406">
-              <caret line="26" column="103" lean-forward="false" selection-start-line="26" selection-start-column="103" selection-end-line="26" selection-end-column="103" />
+            <state relative-caret-position="70">
+              <caret line="38" column="5" lean-forward="false" selection-start-line="38" selection-start-column="5" selection-end-line="38" selection-end-column="5" />
               <folding>
-                <marker date="1513084170934" expanded="true" signature="1749:1909" ph="CREATE TABLE... USER" />
-                <marker date="1513084170934" expanded="true" signature="1951:2028" ph="CREATE TABLE... file" />
-                <marker date="1513084170934" expanded="true" signature="2070:2290" ph="CREATE TABLE... fileinfo" />
-                <marker date="1513084170934" expanded="true" signature="4119:4154" ph="INSERT INTO file... " />
-                <marker date="1513084170934" expanded="true" signature="4372:4415" ph="INSERT INTO USER... " />
-                <marker date="1513084170934" expanded="true" signature="4468:4545" ph="DELETE FROM USER... " />
-                <marker date="1513084170934" expanded="true" signature="4596:4675" ph="SELECT * FRO... USER" />
-                <marker date="1513084170934" expanded="true" signature="4727:4780" ph="INSERT INTO fileinfo... " />
+                <marker date="1513087456795" expanded="true" signature="2075:2243" ph="CREATE TABLE... USER" />
+                <marker date="1513087456795" expanded="true" signature="2290:2371" ph="CREATE TABLE... file" />
+                <marker date="1513087456795" expanded="true" signature="2417:2653" ph="CREATE TABLE... fileinfo" />
+                <marker date="1513087456795" expanded="true" signature="4515:4550" ph="INSERT INTO file... " />
+                <marker date="1513087456795" expanded="true" signature="4768:4811" ph="INSERT INTO USER... " />
+                <marker date="1513087456795" expanded="true" signature="4864:4941" ph="DELETE FROM USER... " />
+                <marker date="1513087456795" expanded="true" signature="4992:5071" ph="SELECT * FRO... USER" />
+                <marker date="1513087456795" expanded="true" signature="5123:5176" ph="INSERT INTO fileinfo... " />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="fileinfo" pinned="false" current-in-tab="true">
-        <entry file="das://table:/cabff763/31bdf3ee-4393-4f35-9e85-41e15ed6ecbd/filecatalog.fileinfo">
-          <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-            <state>
-              <filtering enabled="true" />
             </state>
           </provider>
         </entry>
@@ -534,7 +502,7 @@
       <workItem from="1512572604953" duration="39880000" />
       <workItem from="1512686076711" duration="5904000" />
       <workItem from="1512730333905" duration="7089000" />
-      <workItem from="1512997955131" duration="14378000" />
+      <workItem from="1512997955131" duration="17658000" />
     </task>
     <task id="LOCAL-00001" summary="Connection fixes">
       <created>1512173673797</created>
@@ -568,7 +536,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="148066000" />
+    <option name="totallyTimeSpent" value="151346000" />
   </component>
   <component name="TodoView" selected-index="1">
     <todo-panel id="selected-file">
@@ -581,6 +549,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="82" y="-11" width="1849" height="1102" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32998884" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -592,13 +561,14 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.46042365" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4147157" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32998884" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32998884" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12521343" sideWeight="0.49555555" order="5" side_tool="false" content_ui="combo" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.11895276" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20546386" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29431438" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24985771" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24985771" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -610,7 +580,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29431438" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -663,14 +632,14 @@
         <state relative-caret-position="675">
           <caret line="29" column="24" lean-forward="false" selection-start-line="29" selection-start-column="24" selection-end-line="29" selection-end-column="24" />
           <folding>
-            <marker date="1513084170934" expanded="true" signature="1749:1909" ph="CREATE TABLE... USER" />
-            <marker date="1513084170934" expanded="true" signature="1951:2028" ph="CREATE TABLE... file" />
-            <marker date="1513084170934" expanded="true" signature="2070:2290" ph="CREATE TABLE... fileinfo" />
-            <marker date="1513084170934" expanded="true" signature="4119:4154" ph="INSERT INTO file... " />
-            <marker date="1513084170934" expanded="true" signature="4372:4415" ph="INSERT INTO USER... " />
-            <marker date="1513084170934" expanded="true" signature="4468:4545" ph="DELETE FROM USER... " />
-            <marker date="1513084170934" expanded="true" signature="4596:4675" ph="SELECT * FRO... USER" />
-            <marker date="1513084170934" expanded="true" signature="4727:4780" ph="INSERT INTO fileinfo... " />
+            <marker date="1513087456795" expanded="true" signature="2075:2243" ph="CREATE TABLE... USER" />
+            <marker date="1513087456795" expanded="true" signature="2290:2371" ph="CREATE TABLE... file" />
+            <marker date="1513087456795" expanded="true" signature="2417:2653" ph="CREATE TABLE... fileinfo" />
+            <marker date="1513087456795" expanded="true" signature="4515:4550" ph="INSERT INTO file... " />
+            <marker date="1513087456795" expanded="true" signature="4768:4811" ph="INSERT INTO USER... " />
+            <marker date="1513087456795" expanded="true" signature="4864:4941" ph="DELETE FROM USER... " />
+            <marker date="1513087456795" expanded="true" signature="4992:5071" ph="SELECT * FRO... USER" />
+            <marker date="1513087456795" expanded="true" signature="5123:5176" ph="INSERT INTO fileinfo... " />
           </folding>
         </state>
       </provider>
@@ -723,14 +692,14 @@
         <state relative-caret-position="275">
           <caret line="14" column="0" lean-forward="true" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
           <folding>
-            <marker date="1513084170934" expanded="true" signature="1749:1909" ph="CREATE TABLE... USER" />
-            <marker date="1513084170934" expanded="true" signature="1951:2028" ph="CREATE TABLE... file" />
-            <marker date="1513084170934" expanded="true" signature="2070:2290" ph="CREATE TABLE... fileinfo" />
-            <marker date="1513084170934" expanded="true" signature="4119:4154" ph="INSERT INTO file... " />
-            <marker date="1513084170934" expanded="true" signature="4372:4415" ph="INSERT INTO USER... " />
-            <marker date="1513084170934" expanded="true" signature="4468:4545" ph="DELETE FROM USER... " />
-            <marker date="1513084170934" expanded="true" signature="4596:4675" ph="SELECT * FRO... USER" />
-            <marker date="1513084170934" expanded="true" signature="4727:4780" ph="INSERT INTO fileinfo... " />
+            <marker date="1513087456795" expanded="true" signature="2075:2243" ph="CREATE TABLE... USER" />
+            <marker date="1513087456795" expanded="true" signature="2290:2371" ph="CREATE TABLE... file" />
+            <marker date="1513087456795" expanded="true" signature="2417:2653" ph="CREATE TABLE... fileinfo" />
+            <marker date="1513087456795" expanded="true" signature="4515:4550" ph="INSERT INTO file... " />
+            <marker date="1513087456795" expanded="true" signature="4768:4811" ph="INSERT INTO USER... " />
+            <marker date="1513087456795" expanded="true" signature="4864:4941" ph="DELETE FROM USER... " />
+            <marker date="1513087456795" expanded="true" signature="4992:5071" ph="SELECT * FRO... USER" />
+            <marker date="1513087456795" expanded="true" signature="5123:5176" ph="INSERT INTO fileinfo... " />
           </folding>
         </state>
       </provider>
@@ -872,14 +841,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/startup/CatalogServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="167">
-          <caret line="63" column="0" lean-forward="false" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/common/ServerRMIInterface.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="398">
@@ -906,16 +867,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/controller/ServerRMIImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="139">
-          <caret line="41" column="0" lean-forward="false" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/server/model/UserImpl.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="663">
@@ -933,27 +884,45 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/model/FileCatalogDAO.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1406">
-          <caret line="26" column="103" lean-forward="false" selection-start-line="26" selection-start-column="103" selection-end-line="26" selection-end-column="103" />
-          <folding>
-            <marker date="1513084170934" expanded="true" signature="1749:1909" ph="CREATE TABLE... USER" />
-            <marker date="1513084170934" expanded="true" signature="1951:2028" ph="CREATE TABLE... file" />
-            <marker date="1513084170934" expanded="true" signature="2070:2290" ph="CREATE TABLE... fileinfo" />
-            <marker date="1513084170934" expanded="true" signature="4119:4154" ph="INSERT INTO file... " />
-            <marker date="1513084170934" expanded="true" signature="4372:4415" ph="INSERT INTO USER... " />
-            <marker date="1513084170934" expanded="true" signature="4468:4545" ph="DELETE FROM USER... " />
-            <marker date="1513084170934" expanded="true" signature="4596:4675" ph="SELECT * FRO... USER" />
-            <marker date="1513084170934" expanded="true" signature="4727:4780" ph="INSERT INTO fileinfo... " />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="das://table:/cabff763/31bdf3ee-4393-4f35-9e85-41e15ed6ecbd/filecatalog.fileinfo">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
           <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/startup/CatalogServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="196">
+          <caret line="63" column="0" lean-forward="false" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/controller/ServerRMIImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="196">
+          <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/model/FileCatalogDAO.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="70">
+          <caret line="38" column="5" lean-forward="false" selection-start-line="38" selection-start-column="5" selection-end-line="38" selection-end-column="5" />
+          <folding>
+            <marker date="1513087456795" expanded="true" signature="2075:2243" ph="CREATE TABLE... USER" />
+            <marker date="1513087456795" expanded="true" signature="2290:2371" ph="CREATE TABLE... file" />
+            <marker date="1513087456795" expanded="true" signature="2417:2653" ph="CREATE TABLE... fileinfo" />
+            <marker date="1513087456795" expanded="true" signature="4515:4550" ph="INSERT INTO file... " />
+            <marker date="1513087456795" expanded="true" signature="4768:4811" ph="INSERT INTO USER... " />
+            <marker date="1513087456795" expanded="true" signature="4864:4941" ph="DELETE FROM USER... " />
+            <marker date="1513087456795" expanded="true" signature="4992:5071" ph="SELECT * FRO... USER" />
+            <marker date="1513087456795" expanded="true" signature="5123:5176" ph="INSERT INTO fileinfo... " />
+          </folding>
         </state>
       </provider>
     </entry>

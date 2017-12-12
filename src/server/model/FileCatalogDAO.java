@@ -41,21 +41,33 @@ public class FileCatalogDAO {
     private Connection createDatasource(String datasource, String dbms) throws
             ClassNotFoundException, SQLException{
         conn = connectToFileCatalogDB(datasource,dbms);
-        if (!tableExists(conn)) {
-            Statement statement = conn.createStatement();
-            statement.executeUpdate("CREATE TABLE " + USER_TABLE
-                    + " (" + USER_COLUMN_NAME + " VARCHAR(32) PRIMARY KEY, "
-                    + PASS_COLUMN_NAME + " VARCHAR(32))");
 
-            statement.executeUpdate("CREATE TABLE " + FILE_TABLE
-                    + " (" + FILEB + " LONGBLOB )");
+        String[] tables = {FILE_TABLE, USER_TABLE, FNAME};
+        DatabaseMetaData dbm = conn.getMetaData();
 
-            statement.executeUpdate("CREATE TABLE " + FILEINFO_TABLE
-                    + " (" + FNAME + " VARCHAR(32), "
-                    + FOWNER + " VARCHAR(32), "
-                    + ACCESS_P + " VARCHAR(32), "
-                    + FSIZE + " INT)");
+        for(int i=0; i< tables.length; i++) {
 
+                // check if "employee" table is there
+            ResultSet rs = dbm.getTables(null, null, tables[i], null);
+            if(rs.next()) {
+                // Table does not exist
+                Statement statement = conn.createStatement();
+                statement.executeUpdate("CREATE TABLE " + USER_TABLE
+                        + " (" + USER_COLUMN_NAME + " VARCHAR(32) PRIMARY KEY, "
+                        + PASS_COLUMN_NAME + " VARCHAR(32))");
+
+
+                statement.executeUpdate("CREATE TABLE " + FILE_TABLE
+                        + " (" + FILEB + " LONGBLOB )");
+
+                statement.executeUpdate("CREATE TABLE " + FILEINFO_TABLE
+                        + " (" + FNAME + " VARCHAR(32), "
+                        + FOWNER + " VARCHAR(32), "
+                        + ACCESS_P + " VARCHAR(32), "
+                        + FSIZE + " INT)");
+            }else{
+
+            }
         }
         return conn;
     }
@@ -117,8 +129,6 @@ public class FileCatalogDAO {
         createFileInfo = conn.prepareStatement("INSERT INTO " + FILEINFO_TABLE + " VALUES(?, ?, ?, ?)");
 
     }
-
-
 
 
     private boolean tableExists(Connection conn) throws SQLException {
