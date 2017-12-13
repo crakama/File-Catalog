@@ -5,7 +5,6 @@ import server.model.FileCatalogDAO;
 import java.io.Serializable;
 
 public interface UserInterface extends Serializable {
-    // Food for thought: Client should use this to set name and pass from CMD
 
 
     String getName();
@@ -16,4 +15,6 @@ public interface UserInterface extends Serializable {
     String getFowner();
     String getFaccessMode();
     int getFsize();
+
+
 }

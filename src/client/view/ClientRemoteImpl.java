@@ -1,6 +1,7 @@
 package client.view;
 
 import common.ServerRMIInterface;
+import common.UserInterface;
 import server.model.UserImpl;
 
 import java.io.*;
@@ -57,12 +58,21 @@ public class ClientRemoteImpl implements Runnable {
                         System.out.println("You can now proceed with registration:");
                         System.out.println();
                         System.out.println("Enter your Name:");
-                        String name = bufferedReader.readLine();
+                        String regname = bufferedReader.readLine();
                         System.out.println("Enter your password:");
-                        String password = bufferedReader.readLine();
+                        String regpassword = bufferedReader.readLine();
                         //Invoke remote method
-                        sRemoteInterface.registerUser(name,password);
+                        sRemoteInterface.registerUser(regname,regpassword);
                         System.out.println("You Successfully registered as a new user !!!:");
+                        break;
+                    case "login":
+                        System.out.println("Enter your Name:");
+                        String logname = bufferedReader.readLine();
+                        System.out.println("Enter your Password:");
+                        String logpassword= bufferedReader.readLine();
+                        sRemoteInterface.login(logname,logpassword);
+                        System.out.println("You have successfully logged in");
+
                         break;
                     case "upload":
                         System.out.println("Enter file Name e.g hw.pdf or code.jpg:");

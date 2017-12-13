@@ -11,7 +11,7 @@ import java.sql.*;
 
 public class FileCatalogDAO {
     private PreparedStatement createUserStmt,deleteUserStmt,findUserStmt,
-            uploadFileStmt, createFileInfo;
+            uploadFileStmt, createFileInfo,loginUserStmt;
     Connection conn;
     private static final String USER_TABLE="USER";
     private static final String FILE_TABLE="file";
@@ -42,10 +42,34 @@ public class FileCatalogDAO {
             ClassNotFoundException, SQLException{
         conn = connectToFileCatalogDB(datasource,dbms);
 
-        String[] tables = {FILE_TABLE, USER_TABLE, FNAME};
-        DatabaseMetaData dbm = conn.getMetaData();
+        //String[] tables = {FILE_TABLE, USER_TABLE, FNAME};
+        //DatabaseMetaData dbm = conn.getMetaData();
 
-        for(int i=0; i< tables.length; i++) {
+        DatabaseMetaData dbdata = conn.getMetaData();
+        // check if "employee" table is there
+                ResultSet usertable = dbdata.getTables(null, null, USER_TABLE, null);
+                ResultSet filetable = dbdata.getTables(null, null, FILE_TABLE, null);
+                ResultSet fileinfotable = dbdata.getTables(null, null, FILEINFO_TABLE, null);
+                if (usertable.next() ) {
+                    // Table exists
+                }
+                else {
+                    // Table does not exist
+                    Statement statement = conn.createStatement();
+                    statement.executeUpdate("CREATE TABLE " + USER_TABLE
+                            + " (" + USER_COLUMN_NAME + " VARCHAR(32) PRIMARY KEY, "
+                            + PASS_COLUMN_NAME + " VARCHAR(32))");
+                    statement.executeUpdate("CREATE TABLE " + FILE_TABLE
+                            + " (" + FILEB + " LONGBLOB )");
+
+                    statement.executeUpdate("CREATE TABLE " + FILEINFO_TABLE
+                            + " (" + FNAME + " VARCHAR(32), "
+                            + FOWNER + " VARCHAR(32), "
+                            + ACCESS_P + " VARCHAR(32), "
+                            + FSIZE + " INT)");
+                }
+
+/*        for(int i=0; i< tables.length; i++) {
 
                 // check if "employee" table is there
             ResultSet rs = dbm.getTables(null, null, tables[i], null);
@@ -66,9 +90,9 @@ public class FileCatalogDAO {
                         + ACCESS_P + " VARCHAR(32), "
                         + FSIZE + " INT)");
             }else{
-
+                System.out.println("Tables");
             }
-        }
+        }*/
         return conn;
     }
     /**
@@ -96,6 +120,16 @@ public class FileCatalogDAO {
             System.out.println("Unable to Add new file details!!");
         }
     }
+    public UserImpl loginUser(String name) throws SQLException {
+        loginUserStmt.setString(1,name);
+        //loginUserStmt.setString(2,pass);
+        ResultSet rs = loginUserStmt.executeQuery();
+        if(rs.next()){
+            return new UserImpl(name,rs.getString(PASS_COLUMN_NAME),this);
+        }
+        System.out.println("Unable to log user in!!");
+        return null;
+    }
 
     public UserImpl findUser(String username) throws SQLException{
         findUserStmt.setString(1,username);
@@ -105,6 +139,8 @@ public class FileCatalogDAO {
         }
         return null;
     }
+
+
     public void deleteUser(UserImpl userimpl) throws SQLException{
         deleteUserStmt.setString(1,userimpl.getName());
         deleteUserStmt.executeUpdate();
@@ -126,6 +162,9 @@ public class FileCatalogDAO {
         findUserStmt = conn.prepareStatement("SELECT * FROM "
                 + USER_TABLE
                 + " WHERE name = ?");
+        loginUserStmt = conn.prepareStatement("SELECT * FROM "
+                + USER_TABLE
+                + " WHERE USERNAME = ?");
         createFileInfo = conn.prepareStatement("INSERT INTO " + FILEINFO_TABLE + " VALUES(?, ?, ?, ?)");
 
     }
@@ -160,7 +199,6 @@ public class FileCatalogDAO {
         System.out.println("Connection Returned Null: Unable to create datasource, unknown dbms.");
         return null;
     }
-
 
 
 }

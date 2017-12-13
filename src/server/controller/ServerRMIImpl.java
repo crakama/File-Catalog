@@ -3,6 +3,7 @@ package server.controller;
 import common.ClientRemoteInterface;
 import common.Credentials;
 import common.ServerRMIInterface;
+import common.UserInterface;
 import server.model.FileCatalogDAO;
 import server.model.UserImpl;
 import java.io.Serializable;
@@ -20,7 +21,7 @@ public class ServerRMIImpl extends UnicastRemoteObject implements ServerRMIInter
 
 FileCatalogDAO fileCatalogDAO;
     UserImpl user,file;
-    private String datasource, dbms;
+    private String datasource, dbms,logname,logpass;
 
     public ServerRMIImpl(String datasource, String dbms) throws RemoteException, SQLException, ClassNotFoundException {
         super();
@@ -43,6 +44,19 @@ FileCatalogDAO fileCatalogDAO;
     }
 
     @Override
+    public synchronized UserInterface login(String name, String pass) throws SQLException {
+        //fileCatalogDAO.loginUser(name, pass);
+       try {
+            return fileCatalogDAO.loginUser(name);
+        } catch (Exception e) {
+            System.out.println("Could not login you into your account.");
+
+
+        return null;
+       }
+    }
+
+    @Override
     public synchronized void unRegisterUser(UserImpl userimpl) throws SQLException{
         fileCatalogDAO.deleteUser(userimpl);
     }
@@ -58,10 +72,7 @@ FileCatalogDAO fileCatalogDAO;
        fileCatalogDAO.connectToFileCatalogDB(datasource, dbms);
     }
 
-    @Override
-    public void login(ClientRemoteInterface clientRemoteInterface, Credentials cred) {
 
-    }
 
 
     @Override

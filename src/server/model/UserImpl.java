@@ -10,6 +10,7 @@ public class UserImpl implements UserInterface {
     /**
      * arguments passed from @findUser
      * Creates a new user. The UserImpl object will have a database connection.
+     * creates a new user object based on data fetched from DB UserImpl(name,rs.getString(PASS_COLUMN_NAME),this);
      * @param name The name of user.
      * @param pass    The password for user.
      * @param fileCatalogDAO     The DAO used to store updates to the database.
@@ -30,12 +31,14 @@ public class UserImpl implements UserInterface {
 
 
     @Override
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
     @Override
     public String getPassword() {
+
         return pass;
     }
 
