@@ -38,13 +38,13 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
      */
     @Override
     public void register(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException {
-//        if(fileDao.findUserByName(name) != null){
-//            clientCallbackInterf.serverResponse("Usename already exists");
-//        }else{
+        if(fileDao.findUserByName(name) != null){
+            clientCallbackInterf.serverResponse("\nUsename already exists!!!,Please try another name\n");
+        }else{
             userInterface = new User(name,password);
             String regResponse = (fileDao.registerUser(userInterface)).toString();
             clientCallbackInterf.serverResponse("Registration response:  " + regResponse);
-   //     }
+      }
     }
 
     //TODO: Handle User class after being returned from FileDao

@@ -57,7 +57,7 @@ public class FileDao {
 
         findUserStmt = conn.prepareStatement("SELECT * FROM "
                 + tables[0]
-                + " WHERE name = ?");
+                + " WHERE USERNAME = ?");
         loginUserStmt = conn.prepareStatement("SELECT * FROM "
                 + tables[0]
                 + " WHERE USERNAME = ? AND PASS= ?");
@@ -115,6 +115,7 @@ public class FileDao {
         String name = userImpl.getUserName();
         String password = userImpl.getPassword();
         System.out.println("Parameters at regUser" + name + password);
+
         try {
             createUserStmt.setString(2,password);
             createUserStmt.setString(1,name);
@@ -136,7 +137,16 @@ public class FileDao {
      */
     public User findUserByName(String name) {
         //TODO: Query the database and return
-        return new User(name, "password",this);
+        try {
+            findUserStmt.setString(1,name);
+            ResultSet rs = findUserStmt.executeQuery();
+            if(rs.next()){
+                return new User(name,rs.getString(PASS_COLUMN_NAME),this);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
