@@ -13,13 +13,12 @@ public class StartClient {
     public static void main(String[] args) {
 	// write your code here
         try {
-            //ServerInterface serverInterface = (ServerInterface) Naming.lookup(ServerInterface.BANK_NAME_IN_REGISTRY);
+            ServerInterface serverInterface = (ServerInterface) Naming.lookup(ServerInterface.SERVER_NAME_IN_REGISTRY);
             //new ClientManager().start(serverInterface);
-            new ClientManager().start();
+            new ClientManager().start(serverInterface);
 
-        } catch (RemoteException e) {
+        } catch (RemoteException|MalformedURLException |NotBoundException e) {
             e.printStackTrace();
         }
-
     }
 }

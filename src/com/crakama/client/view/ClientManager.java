@@ -22,8 +22,8 @@ public class ClientManager implements Runnable{
 
     }
 
-    public void start() {
-        //this.serverInterface = serverInterface;
+    public void start(ServerInterface serverInterface) {
+        this.serverInterface = serverInterface;
         commandsReceived = true;
         new Thread(this).start();
     }
@@ -37,7 +37,7 @@ public class ClientManager implements Runnable{
                 CmdReader cmdReader = new CmdReader(inputHandler());
                 switch (cmdReader.getCmd()){
                     case CONNECT:
-                        lookupServer(cmdReader.getParameters(1));
+                        //lookupServer(cmdReader.getParameters(1));
                         clientCallbackInterf.serverResponse("LookUp Success!!!");
                     break;
                     case LOGIN:
@@ -47,15 +47,14 @@ public class ClientManager implements Runnable{
 
                     break;
                     case REGISTER:
-
-                        serverInterface.register(clientCallbackInterf,cmdReader.getParameters(0),
-                                                 cmdReader.getParameters(1));
+                        serverInterface.register(clientCallbackInterf,cmdReader.getParameters(1),
+                                                 cmdReader.getParameters(2));
                     break;
                     case UNREGISTER:
 
                     break;
                 }
-            } catch (IOException |NotBoundException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 

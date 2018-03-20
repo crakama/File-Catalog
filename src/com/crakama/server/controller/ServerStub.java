@@ -3,6 +3,8 @@ package com.crakama.server.controller;
 import com.crakama.common.ClientInterface;
 import com.crakama.common.ServerInterface;
 import com.crakama.server.model.FileDao;
+import com.crakama.server.model.User;
+import com.crakama.server.model.UserInterface;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -14,15 +16,19 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class ServerStub extends UnicastRemoteObject implements ServerInterface{
     private final FileDao fileDao;
+    private UserInterface userInterface;
 
     /**
      * Constructor calls on superclass U.R.O to handle exporting operations
      * @throws RemoteException
+     * @param dbms
+     * @param datasource
      */
-    public ServerStub() throws RemoteException {
+    public ServerStub(String dbms, String datasource) throws RemoteException {
         super();
         //TODO: Initialise FileDao here
-        this.fileDao = new FileDao();
+
+        this.fileDao = new FileDao(dbms,datasource);
     }
 
     /**
@@ -32,11 +38,13 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
      */
     @Override
     public void register(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException {
-        if(fileDao.findUserByName(name) != null){
-            clientCallbackInterf.serverResponse("Usename already exists");
-        }
-        String regResponse = fileDao.registerUser();
-        clientCallbackInterf.serverResponse("Registration response:  " + regResponse);
+//        if(fileDao.findUserByName(name) != null){
+//            clientCallbackInterf.serverResponse("Usename already exists");
+//        }else{
+            userInterface = new User(name,password);
+            String regResponse = (fileDao.registerUser(userInterface)).toString();
+            clientCallbackInterf.serverResponse("Registration response:  " + regResponse);
+   //     }
     }
 
     //TODO: Handle User class after being returned from FileDao

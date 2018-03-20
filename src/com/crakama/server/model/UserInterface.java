@@ -9,4 +9,6 @@ import java.io.Serializable;
 public interface UserInterface extends Serializable {
 
     public String getUserName();
+
+    String getPassword();
 }

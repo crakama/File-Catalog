@@ -31,6 +31,10 @@ public class User implements UserInterface {
     public  User(String name, String pass){
         this(name,pass,null);
     }
+
+    public User(String resp) {
+    }
+
     @Override
     public String getUserName() {
         return username;
@@ -41,9 +45,18 @@ public class User implements UserInterface {
      * Any call to User class is converted to string and specific details stated here are returned.
      * @return
      * findUserByName in FileDao returns a version of this object with username and password to other
-     * classes like Controller.
+     * classes like Controller/ServerStub.
      */
     public String toString(){
-        return null;
+        StringBuilder builder = new StringBuilder();
+        builder.append(", User: ");
+        builder.append(username);
+        builder.append(" has been created with password: ");
+        builder.append(pass);
+        return builder.toString();
+    }
+
+    public String getPassword() {
+        return pass;
     }
 }
