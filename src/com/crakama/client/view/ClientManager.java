@@ -1,5 +1,6 @@
 package com.crakama.client.view;
 
+import com.crakama.client.net.ClientFileHandler;
 import com.crakama.common.ClientInterface;
 import com.crakama.common.ServerInterface;
 
@@ -14,13 +15,18 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class ClientManager implements Runnable{
     ServerInterface serverInterface;
+    //Thread fileworker;
+    private final String host = "localhost";
+    private final int port = 1213;
     private boolean commandsReceived = false;
     private boolean loginsession = false;
     private BufferedReader userInput;
     private final ClientInterface clientCallbackInterf;
+    //private final ClientFileHandler clientFileHandler;
     public ClientManager() throws RemoteException {
         clientCallbackInterf = new ClientStub();
-
+        //clientFileHandler = new ClientFileHandler();
+        //fileworker = new Thread(clientFileHandler);
     }
 
     public void start(ServerInterface serverInterface) {
@@ -53,6 +59,15 @@ public class ClientManager implements Runnable{
                         serverInterface.unregister(clientCallbackInterf,cmdReader.getParameters(1),
                                 cmdReader.getParameters(2));
                     break;
+                    case READFILE:
+                        if(loginsession==true){
+                            //clientFileHandler.start(host,port);
+                            new ClientFileHandler().start(host,port,clientCallbackInterf,cmdReader.getParameters(1));
+                        }else {
+                            clientCallbackInterf.serverResponse("You need to Register and " +
+                                    "Login to View the file");
+                        }
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
