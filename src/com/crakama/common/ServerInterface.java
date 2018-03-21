@@ -12,4 +12,5 @@ public interface ServerInterface extends Remote {
     public static final String SERVER_NAME_IN_REGISTRY = "fileserver";
 
     void register(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException;
+    void login(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException;
 }

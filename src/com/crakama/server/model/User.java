@@ -51,7 +51,7 @@ public class User implements UserInterface {
         StringBuilder builder = new StringBuilder();
         builder.append(", User: ");
         builder.append(username);
-        builder.append(" has been created with password: ");
+        builder.append(" with password: ");
         builder.append(pass);
         return builder.toString();
     }

@@ -43,8 +43,22 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
         }else{
             userInterface = new User(name,password);
             String regResponse = (fileDao.registerUser(userInterface)).toString();
-            clientCallbackInterf.serverResponse("Registration response:  " + regResponse);
+            clientCallbackInterf.serverResponse("Registration response:  " + regResponse + " Successfully Created!!\n");
       }
+    }
+
+    @Override
+    public void login(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException {
+        User userObj;
+        if((userObj = fileDao.findUserByName(name)) != null){
+            if ((userObj.getUserName().equalsIgnoreCase(name))&& (( userObj.getPassword().equalsIgnoreCase(password) ))){
+                clientCallbackInterf.serverResponse("Login of user :"+
+                        userObj.getUserName()+ " with password :"+userObj.getPassword()+" was Successful!!!");
+            }else {
+                clientCallbackInterf.serverResponse("Incorrect Credentials, Please try again!!!");
+
+            }
+        }
     }
 
     //TODO: Handle User class after being returned from FileDao

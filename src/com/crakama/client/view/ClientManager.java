@@ -36,12 +36,9 @@ public class ClientManager implements Runnable{
             try {
                 CmdReader cmdReader = new CmdReader(inputHandler());
                 switch (cmdReader.getCmd()){
-                    case CONNECT:
-                        //lookupServer(cmdReader.getParameters(1));
-                        clientCallbackInterf.serverResponse("LookUp Success!!!");
-                    break;
                     case LOGIN:
-
+                        serverInterface.login(clientCallbackInterf,cmdReader.getParameters(1),
+                                cmdReader.getParameters(2));
                     break;
                     case LOGOUT:
 
@@ -59,11 +56,6 @@ public class ClientManager implements Runnable{
             }
 
         }
-    }
-    private void lookupServer(String host) throws NotBoundException, MalformedURLException,
-            RemoteException {
-        serverInterface = (ServerInterface) Naming.lookup(
-                "//" + host + "/" + ServerInterface.SERVER_NAME_IN_REGISTRY);
     }
 
 
