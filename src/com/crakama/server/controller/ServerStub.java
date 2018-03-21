@@ -27,7 +27,6 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
     public ServerStub(String dbms, String datasource) throws RemoteException {
         super();
         //TODO: Initialise FileDao here
-
         this.fileDao = new FileDao(dbms,datasource);
     }
 
@@ -43,7 +42,7 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
         }else{
             userInterface = new User(name,password);
             String regResponse = (fileDao.registerUser(userInterface)).toString();
-            clientCallbackInterf.serverResponse("Registration response:  " + regResponse + " Successfully Created!!\n");
+            clientCallbackInterf.serverResponse("REGISTRATION:  " + regResponse + " Successfully Created!!\n");
       }
     }
 
@@ -52,15 +51,25 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
         User userObj;
         if((userObj = fileDao.findUserByName(name)) != null){
             if ((userObj.getUserName().equalsIgnoreCase(name))&& (( userObj.getPassword().equalsIgnoreCase(password) ))){
-                clientCallbackInterf.serverResponse("Login of user :"+
+                clientCallbackInterf.serverResponse("VERIFICATION: Login of user :"+
                         userObj.getUserName()+ " with password :"+userObj.getPassword()+" was Successful!!!");
-            }else {
-                clientCallbackInterf.serverResponse("Incorrect Credentials, Please try again!!!");
-
+            }else if(!((userObj.getUserName().equalsIgnoreCase(name))&& (( userObj.getPassword().equalsIgnoreCase(password) )))) {
+                clientCallbackInterf.serverResponse("VERIFICATION: Incorrect Credentials, Please try again!!!");
+            }
+            else {
+                clientCallbackInterf.serverResponse("VERIFICATION: No records of such user in the system");
             }
         }
     }
-
-    //TODO: Handle User class after being returned from FileDao
-    //TODO: The result which mainly consists of string representation of User class can be used on DELETE/UNREGISTER OP
+    @Override
+    public void unregister(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException {
+        User userObj;
+        if((userObj = fileDao.findUserByName(name)) != null){
+            userInterface = new User(name, password);
+           String userDeleted = (fileDao.deleteUser(userObj.getUserName(),userObj.getPassword())).toString();
+           clientCallbackInterf.serverResponse("DE-REGISTRATION: " +userDeleted+" Successfully removed from the system");
+        }else {
+            clientCallbackInterf.serverResponse("DE-REGISTRATION: No such records in the system to be deleted!!!");
+        }
+    }
 }

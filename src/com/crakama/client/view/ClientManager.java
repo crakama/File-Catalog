@@ -15,6 +15,7 @@ import java.rmi.server.UnicastRemoteObject;
 public class ClientManager implements Runnable{
     ServerInterface serverInterface;
     private boolean commandsReceived = false;
+    private boolean loginsession = false;
     private BufferedReader userInput;
     private final ClientInterface clientCallbackInterf;
     public ClientManager() throws RemoteException {
@@ -39,16 +40,18 @@ public class ClientManager implements Runnable{
                     case LOGIN:
                         serverInterface.login(clientCallbackInterf,cmdReader.getParameters(1),
                                 cmdReader.getParameters(2));
+                        loginsession = true;
                     break;
                     case LOGOUT:
-
+                        loginsession = false;
                     break;
                     case REGISTER:
                         serverInterface.register(clientCallbackInterf,cmdReader.getParameters(1),
                                                  cmdReader.getParameters(2));
                     break;
                     case UNREGISTER:
-
+                        serverInterface.unregister(clientCallbackInterf,cmdReader.getParameters(1),
+                                cmdReader.getParameters(2));
                     break;
                 }
             } catch (IOException e) {

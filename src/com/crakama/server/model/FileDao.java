@@ -53,7 +53,7 @@ public class FileDao {
 
         deleteUserStmt = conn.prepareStatement("DELETE FROM "
                 + tables[0]
-                + " WHERE name = ?");
+                + " WHERE USERNAME = ?");
 
         findUserStmt = conn.prepareStatement("SELECT * FROM "
                 + tables[0]
@@ -149,4 +149,13 @@ public class FileDao {
         return null;
     }
 
+    public User deleteUser(String userName, String password) {
+        try {
+            deleteUserStmt.setString(1,userName);
+            deleteUserStmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return  new User(userName,password);
+    }
 }
