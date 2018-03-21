@@ -1,6 +1,6 @@
 package com.crakama.server.serverlauncher;
 
-import com.crakama.server.controller.FileHandler;
+import com.crakama.server.controller.SFileTransfer;
 import com.crakama.server.controller.ServerStub;
 
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class StartServer {
             ServerSocket serverSocket = new ServerSocket(1213);
             while(true){
                 Socket clientSocket = serverSocket.accept();
-                FileHandler serverTCP = new FileHandler(clientSocket);
+                SFileTransfer serverTCP = new SFileTransfer(clientSocket);
                 Thread serverThread = new Thread(serverTCP);
                 System.out.println("New Server Thread Started on socket:" + clientSocket);
                 serverThread.start();

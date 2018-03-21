@@ -4,6 +4,5 @@ public enum CmdType {
     REGISTER,
     UNREGISTER,
     LOGIN,
-    CONNECT,
-    NO_COMMAND, READFILE, LOGOUT
+    NO_COMMAND, READ, UPLOAD,LOGOUT
 }
