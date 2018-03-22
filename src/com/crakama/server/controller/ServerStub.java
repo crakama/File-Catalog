@@ -6,6 +6,7 @@ import com.crakama.server.model.FileDao;
 import com.crakama.server.model.User;
 import com.crakama.server.model.UserInterface;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -71,5 +72,17 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
         }else {
             clientCallbackInterf.serverResponse("DE-REGISTRATION: No such records in the system to be deleted!!!");
         }
+    }
+
+    @Override
+    public void checkfile(ClientInterface clientCallbackInterf, String filename) throws RemoteException {
+
+
+/*        File ifExists = new File("D:\\Projects\\IdeaProjects\\FileCatalog\\uploads\\"+filename);
+       if(!(ifExists.getName().equalsIgnoreCase(filename))){
+           clientCallbackInterf.serverResponse(ifExists.getName()+"NO EXISTS");
+       }else if(ifExists.getName().equalsIgnoreCase(filename)){
+           clientCallbackInterf.serverResponse(ifExists.getName()+"EXISTS");
+       }*/
     }
 }

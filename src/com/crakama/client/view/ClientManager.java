@@ -59,7 +59,7 @@ public class ClientManager implements Runnable{
                                 cmdReader.getParameters(1),
                                 cmdReader.getParameters(2));
                     break;
-                    case READ:
+                    case DOWNLOAD:
                         if(loginsession==true){
                             new CFileTransfer().start(host,port,clientCallbackInterf,
                                     cmdReader.getCmd(), cmdReader.getParameters(1));
@@ -70,8 +70,11 @@ public class ClientManager implements Runnable{
                         break;
                     case UPLOAD:
                         if(loginsession==true){
-                            new CFileTransfer().start(host,port,clientCallbackInterf,
-                                    cmdReader.getCmd(),cmdReader.getParameters(1));
+                            serverInterface.checkfile(clientCallbackInterf,
+                                    cmdReader.getParameters(1));
+
+//                            new CFileTransfer().start(host,port,clientCallbackInterf,
+//                                    cmdReader.getCmd(),cmdReader.getParameters(1));
                         }else {
                             clientCallbackInterf.serverResponse("You need to Register and " +
                                     "Login to Upload the file");

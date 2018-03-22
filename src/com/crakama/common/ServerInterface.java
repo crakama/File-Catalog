@@ -14,4 +14,6 @@ public interface ServerInterface extends Remote {
     void register(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException;
     void login(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException;
     void unregister(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException;
+
+    void checkfile(ClientInterface clientCallbackInterf, String filename) throws RemoteException;
 }

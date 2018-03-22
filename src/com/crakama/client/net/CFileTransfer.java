@@ -58,7 +58,7 @@ public class CFileTransfer implements Runnable{
                     String location = download();
                     clientCallbackInterf.serverResponse("DOWNLOAD: Download Successful!!!, find it in "+location);
                 }else {
-                    clientCallbackInterf.serverResponse("File Not Found on the Server!!!, " +
+                    clientCallbackInterf.serverResponse("FileCatalog Not Found on the Server!!!, " +
                             "Check the name and try again");
                 }
             } catch (IOException e) {

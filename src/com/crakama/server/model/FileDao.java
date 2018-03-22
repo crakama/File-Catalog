@@ -61,7 +61,8 @@ public class FileDao {
         loginUserStmt = conn.prepareStatement("SELECT * FROM "
                 + tables[0]
                 + " WHERE USERNAME = ? AND PASS= ?");
-        createFileInfo = conn.prepareStatement("INSERT INTO " + tables[1] + " VALUES(?, ?, ?, ?)");
+        //createFileInfo = conn.prepareStatement("INSERT INTO " + tables[1] + " VALUES(?, ?, ?, ?)");
+        createFileInfo = conn.prepareStatement("INSERT INTO " + tables[1] + " VALUES(?, ?)");
     }
 
     /**
@@ -157,5 +158,24 @@ public class FileDao {
             e.printStackTrace();
         }
         return  new User(userName,password);
+    }
+
+    public int saveToDB(FileInterface fileInterface) {
+        String name = fileInterface.getUserName();
+        String password = fileInterface.getPassword();
+        System.out.println("Parameters at regUser" + name + password);
+
+        try {
+            createFileInfo.setString(2,password);
+            createFileInfo.setString(1,name);
+            int row = createFileInfo.executeUpdate();
+            if(row != 1){
+                int code = 0;
+                return code;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 1;
     }
 }

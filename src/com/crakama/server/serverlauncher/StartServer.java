@@ -50,7 +50,7 @@ public class StartServer {
             ServerSocket serverSocket = new ServerSocket(1213);
             while(true){
                 Socket clientSocket = serverSocket.accept();
-                SFileTransfer serverTCP = new SFileTransfer(clientSocket);
+                SFileTransfer serverTCP = new SFileTransfer(clientSocket,dbms,datasource);
                 Thread serverThread = new Thread(serverTCP);
                 System.out.println("New Server Thread Started on socket:" + clientSocket);
                 serverThread.start();
