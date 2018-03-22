@@ -69,6 +69,7 @@ public class ClientManager implements Runnable{
                         }
                         break;
                     case UPLOAD:
+                        //TODO: Take care of same column name for file and user tables
                         if(loginsession==true){
                             serverInterface.checkfile(clientCallbackInterf,
                                     cmdReader.getParameters(1));

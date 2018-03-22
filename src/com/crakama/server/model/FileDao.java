@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class FileDao {
     private PreparedStatement createUserStmt,deleteUserStmt,
-            findUserStmt,loginUserStmt,createFileInfo;
+            findUserStmt,loginUserStmt,createFileInfo,findFileStmt;
     private static final String FILE_TABLE="file";
     private static final String FILEINFO_TABLE="fileinfo";
     private static final String USER_COLUMN_NAME="USERNAME";
@@ -57,6 +57,9 @@ public class FileDao {
 
         findUserStmt = conn.prepareStatement("SELECT * FROM "
                 + tables[0]
+                + " WHERE USERNAME = ?");
+        findFileStmt = conn.prepareStatement("SELECT * FROM "
+                + tables[1]
                 + " WHERE USERNAME = ?");
         loginUserStmt = conn.prepareStatement("SELECT * FROM "
                 + tables[0]
@@ -177,5 +180,18 @@ public class FileDao {
             e.printStackTrace();
         }
         return 1;
+    }
+    //TODO: Take care of same column name for file and user tables
+    public FileCatalog findFileByName(String name) {
+        try {
+            findFileStmt.setString(1,name);
+            ResultSet rs = findFileStmt.executeQuery();
+            if(rs.next()){
+                return new FileCatalog(name,rs.getString(PASS_COLUMN_NAME),this);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

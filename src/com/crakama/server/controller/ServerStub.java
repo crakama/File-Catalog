@@ -2,9 +2,7 @@ package com.crakama.server.controller;
 
 import com.crakama.common.ClientInterface;
 import com.crakama.common.ServerInterface;
-import com.crakama.server.model.FileDao;
-import com.crakama.server.model.User;
-import com.crakama.server.model.UserInterface;
+import com.crakama.server.model.*;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -18,6 +16,7 @@ import java.rmi.server.UnicastRemoteObject;
 public class ServerStub extends UnicastRemoteObject implements ServerInterface{
     private final FileDao fileDao;
     private UserInterface userInterface;
+    private FileInterface fileInterface;
 
     /**
      * Constructor calls on superclass U.R.O to handle exporting operations
@@ -76,13 +75,17 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
 
     @Override
     public void checkfile(ClientInterface clientCallbackInterf, String filename) throws RemoteException {
+        if(fileDao.findFileByName(filename) != null){
+            clientCallbackInterf.serverResponse("\nFile has to be Unique!!!,Please try another name\n");
+        }else{
+            fileInterface = new FileCatalog(filename,"kate");
+            int code = (fileDao.saveToDB(fileInterface));
+            if(code == 1){
+                clientCallbackInterf.serverResponse("FILE STATUS:  " + code + " Successfully Saved to DB!!\n");
+            }else{
+                clientCallbackInterf.serverResponse("FILE STATUS:  " + code + " Failed to Save to DB!!\n");
+            }
 
-
-/*        File ifExists = new File("D:\\Projects\\IdeaProjects\\FileCatalog\\uploads\\"+filename);
-       if(!(ifExists.getName().equalsIgnoreCase(filename))){
-           clientCallbackInterf.serverResponse(ifExists.getName()+"NO EXISTS");
-       }else if(ifExists.getName().equalsIgnoreCase(filename)){
-           clientCallbackInterf.serverResponse(ifExists.getName()+"EXISTS");
-       }*/
+        }
     }
 }
