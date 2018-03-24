@@ -1,10 +1,9 @@
 package com.crakama.server.controller;
 
-import com.crakama.common.ClientInterface;
-import com.crakama.common.ServerInterface;
+import com.crakama.common.rmi.ClientInterface;
+import com.crakama.common.rmi.ServerInterface;
 import com.crakama.server.model.*;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 

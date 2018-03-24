@@ -1,4 +1,4 @@
-package com.crakama.common;
+package com.crakama.common.rmi;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

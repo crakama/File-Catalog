@@ -1,8 +1,9 @@
 package com.crakama.client.view;
 
 import com.crakama.client.net.CFileTransfer;
-import com.crakama.common.ClientInterface;
-import com.crakama.common.ServerInterface;
+import com.crakama.common.rmi.ClientInterface;
+import com.crakama.common.rmi.ServerInterface;
+import com.crakama.common.tcp.MsgType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,14 +37,16 @@ public class ClientManager implements Runnable{
      * Inteprate CMD commands read and invoke necessary methods
      */
     public void run() {
+        CFileTransfer cFileTransfer = new CFileTransfer();
         while(commandsReceived){
             try {
                 CmdReader cmdReader = new CmdReader(inputHandler());
                 switch (cmdReader.getCmd()){
-                    case LOGIN:
+                    case LOGIN:case CONNECT:
                         serverInterface.login(clientCallbackInterf,
                                 cmdReader.getParameters(1),
                                 cmdReader.getParameters(2));
+                        cFileTransfer.start(host,port,clientCallbackInterf);
                         loginsession = true;
                     break;
                     case LOGOUT:
@@ -61,8 +64,9 @@ public class ClientManager implements Runnable{
                     break;
                     case DOWNLOAD:
                         if(loginsession==true){
-                            new CFileTransfer().start(host,port,clientCallbackInterf,
-                                    cmdReader.getCmd(), cmdReader.getParameters(1));
+                            cFileTransfer.sendMsg(MsgType.DOWNLOAD,cmdReader.getParameters(1));
+//                            new CFileTransfer().start(host,port,clientCallbackInterf,
+//                                    cmdReader.getCmd(), cmdReader.getParameters(1));
                         }else {
                             clientCallbackInterf.serverResponse("You need to Register and " +
                                     "Login to View the file");
@@ -74,8 +78,8 @@ public class ClientManager implements Runnable{
                             serverInterface.checkfile(clientCallbackInterf,
                                     cmdReader.getParameters(1));
 
-//                            new CFileTransfer().start(host,port,clientCallbackInterf,
-//                                    cmdReader.getCmd(),cmdReader.getParameters(1));
+                            new CFileTransfer().start(host,port,clientCallbackInterf,
+                                    cmdReader.getCmd(),cmdReader.getParameters(1));
                         }else {
                             clientCallbackInterf.serverResponse("You need to Register and " +
                                     "Login to Upload the file");
@@ -112,6 +116,7 @@ public class ClientManager implements Runnable{
 
        public ClientStub() throws RemoteException {
            //U.R.O Handles exporting operations
+
        }
 
        @Override

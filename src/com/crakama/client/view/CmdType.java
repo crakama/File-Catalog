@@ -3,6 +3,6 @@ package com.crakama.client.view;
 public enum CmdType {
     REGISTER,
     UNREGISTER,
-    LOGIN,
-    NO_COMMAND, READ, UPLOAD, DOWNLOAD, LOGOUT
+    LOGIN, CONNECT,
+    NO_COMMAND, UPLOAD, DOWNLOAD, LOGOUT
 }

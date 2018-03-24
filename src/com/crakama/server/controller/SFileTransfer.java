@@ -1,8 +1,9 @@
 package com.crakama.server.controller;
 
+import com.crakama.common.tcp.MsgProtocol;
+import com.crakama.common.tcp.MsgType;
 import com.crakama.server.model.FileDao;
-import com.crakama.server.model.FileInterface;
-import com.crakama.server.model.FileCatalog;
+import com.crakama.server.tcpnet.TCPFileHandler;
 
 import java.io.*;
 import java.net.Socket;
@@ -21,9 +22,11 @@ public class SFileTransfer implements Runnable{
     private BufferedInputStream bufIn;
     private BufferedOutputStream bufOut;
     private FileDao fileDao;
-    public SFileTransfer(Socket clientSocket, String dbms, String datasource) {
+    private TCPFileHandler tcpFileHandler;
+    public SFileTransfer(TCPFileHandler tcpFileHandler, Socket clientSocket) {
         this.socket = clientSocket;
-        fileDao = new FileDao(dbms,datasource);
+        //fileDao = new FileDao(dbms,datasource);
+        this.tcpFileHandler = tcpFileHandler;
     }
     /**
      * @code 0 indicates file not found, 1 indicates file found and download process begins
@@ -34,63 +37,42 @@ public class SFileTransfer implements Runnable{
      */
     @Override
     public void run() {
-        try {
-            bufReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            bufOut = new BufferedOutputStream(socket.getOutputStream());
-            bufIn = new BufferedInputStream(socket.getInputStream());
-            int codeRead = bufIn.read();
-            //0 here means download operation requested and 1 means upload op
-            if(codeRead == 2){
-                String read = bufReader.readLine();
-                File fileObj = new File(read);
+        while (socket.isConnected()){
+            try{
+               MsgProtocol msg = tcpFileHandler.message();
+                switch (msg.getMsgType()){
 
-                if(!fileObj.exists()){
-                   byte code = (byte) 0;
-                   bufOut.write(code);
-                    closeConnection();
-                }else{
-                    fromDIR_toBuffer(fileObj);
-                    closeConnection();
+                    case DOWNLOAD:
+                        String filename = msg.getMsgBody();
+                        File fileObj = new File(filename);
+                        if(!fileObj.exists()){
+                            tcpFileHandler.sendResponse(MsgType.DOWNLOAD_NO,"File Not Found on Server");
+                            tcpFileHandler.closeConnection();
+                        }else{
+                            tcpFileHandler.fromDIR_toBuffer(fileObj,socket);
+                            tcpFileHandler.sendResponse(MsgType.DOWNLOAD_OK,filename);
+                            tcpFileHandler.closeConnection();
+                        }
+
+                        break;
+                    case UPLOAD:
+
+                        break;
                 }
-            }else if(codeRead== 3){
-                String filename = bufReader.readLine();
-                upload(filename);
+            }catch (ClassNotFoundException|IOException e){
 
+            }finally {
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
     }
-    private void fromDIR_toBuffer(File fileObj) throws IOException {
-        byte code = (byte) 1;
-        bufOut.write(code);
-        //Start download -Read file from root/project directory and write to buffer, then to socket connection
-        bufIn = new BufferedInputStream(new FileInputStream(fileObj));
-        byte[] buffer = new byte[8192];
-        int byteRead = 0;
-        while ((byteRead = bufIn.read(buffer))!= -1){
-            bufOut.write(buffer,0,byteRead);
-            bufOut.flush();
-        }
-    }
+
     //TODO: Handle invalid path exception thrown when another process/windows is accessing directory
     private void upload(String filename){
-        System.out.println("File UPloaded");
-/*        String owner = "kate";
-        FileInterface fileInterface = new FileCatalog(filename,owner);
-        int filestatus = fileDao.saveToDB(fileInterface);
-        if(filestatus == 0){
-            System.out.println("Duplicate file name, File NOT saved into DB");
-        }else{
-            System.out.println("File saved");
-        }*/
-
- /*    String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalog\\uploads\\";
+        String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalogAlpha\\uploads\\";
         try {
             bufOut = new BufferedOutputStream(
-                    new FileOutputStream( fileLocation+ filename));
+                    new FileOutputStream( fileLocation.trim()+ filename));
             byte[] buffer = new byte[8192];
             int byteRead = 0;
             while ((byteRead = bufIn.read(buffer))!= -1){
@@ -99,24 +81,7 @@ public class SFileTransfer implements Runnable{
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
-    }
-    private void closeConnection(){
-        try {
-        if(bufOut != null){
-            bufOut.close();
-            }
-            if(bufReader != null){
-                bufReader.close();
-            }
-            if(bufIn != null){
-                bufIn.close();
-            }
-            if(bufOut != null){
-                socket.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
+
 }

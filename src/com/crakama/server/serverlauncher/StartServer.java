@@ -2,6 +2,7 @@ package com.crakama.server.serverlauncher;
 
 import com.crakama.server.controller.SFileTransfer;
 import com.crakama.server.controller.ServerStub;
+import com.crakama.server.tcpnet.TCPFileHandler;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -50,7 +51,9 @@ public class StartServer {
             ServerSocket serverSocket = new ServerSocket(1213);
             while(true){
                 Socket clientSocket = serverSocket.accept();
-                SFileTransfer serverTCP = new SFileTransfer(clientSocket,dbms,datasource);
+                TCPFileHandler tcpFileHandler = new TCPFileHandler(clientSocket);
+                SFileTransfer serverTCP = new SFileTransfer(tcpFileHandler,clientSocket);
+
                 Thread serverThread = new Thread(serverTCP);
                 System.out.println("New Server Thread Started on socket:" + clientSocket);
                 serverThread.start();
