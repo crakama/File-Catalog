@@ -4,5 +4,5 @@ public enum MsgType {
     DOWNLOAD,
     DOWNLOAD_OK,
     DOWNLOAD_NO,
-    UPLOAD
+    UPLOAD_OK, UPLOAD
 }

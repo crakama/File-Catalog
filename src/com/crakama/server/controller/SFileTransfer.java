@@ -2,7 +2,6 @@ package com.crakama.server.controller;
 
 import com.crakama.common.tcp.MsgProtocol;
 import com.crakama.common.tcp.MsgType;
-import com.crakama.server.model.FileDao;
 import com.crakama.server.tcpnet.TCPFileHandler;
 
 import java.io.*;
@@ -36,10 +35,10 @@ public class SFileTransfer implements Runnable{
         while (socket.isConnected()){
             try{
                MsgProtocol msg = tcpFileHandler.message();
+                String filename = msg.getMsgBody();
                 switch (msg.getMsgType()){
-
                     case DOWNLOAD:
-                        String filename = msg.getMsgBody();
+
                         File fileObj = new File(filename);
                         if(!fileObj.exists()){
                             tcpFileHandler.sendResponse(MsgType.DOWNLOAD_NO,"File Not Found on Server");
@@ -52,7 +51,8 @@ public class SFileTransfer implements Runnable{
 
                         break;
                     case UPLOAD:
-
+                        //tcpFileHandler.sendResponse(MsgType.UPLOAD_OK,filename);
+                        tcpFileHandler.upload(filename,socket);
                         break;
                 }
             }catch (ClassNotFoundException|IOException e){
@@ -63,22 +63,5 @@ public class SFileTransfer implements Runnable{
 
     }
 
-    //TODO: Handle invalid path exception thrown when another process/windows is accessing directory
-    private void upload(String filename){
-        //TODO bufIn
-        String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalogAlpha\\uploads\\";
-        try {
-            bufOut = new BufferedOutputStream(
-                    new FileOutputStream( fileLocation.trim()+ filename));
-            byte[] buffer = new byte[8192];
-            int byteRead = 0;//= bufIn.read(buffer);
-            while ((byteRead )!= -1){
-                bufOut.write(buffer,0,byteRead);
-                bufOut.flush();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 }

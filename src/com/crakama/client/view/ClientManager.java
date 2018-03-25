@@ -6,10 +6,7 @@ import com.crakama.common.rmi.ServerInterface;
 import com.crakama.common.tcp.MsgType;
 import com.crakama.common.tcp.TCPCLientInterface;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.CompletableFuture;
@@ -23,6 +20,7 @@ public class ClientManager implements Runnable{
     private BufferedReader userInput;
     private ClientInterface clientCallbackInterf;
     private CFileTransfer cFileTransfer;
+    boolean savedTODB = false;
     public ClientManager() throws RemoteException {
 
     }
@@ -83,6 +81,13 @@ public class ClientManager implements Runnable{
                         if(loginsession==true){
                             serverInterface.checkfile(clientCallbackInterf,
                                     cmdReader.getParameters(1));
+                            Thread.sleep(1000);
+                            if(savedTODB){
+                                cFileTransfer.sendMsg(MsgType.UPLOAD,cmdReader.getParameters(1));
+                                cFileTransfer.from_C_DIR_toBuffer(new File(cmdReader.getParameters(1)));
+
+                            }
+
                         }else {
                             clientCallbackInterf.serverResponse("You need to Register and " +
                                     "Login to Upload the file");
@@ -90,6 +95,8 @@ public class ClientManager implements Runnable{
                         break;
                 }
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
@@ -125,5 +132,14 @@ public class ClientManager implements Runnable{
        public void serverResponse(String response) throws RuntimeException {
            System.out.println("StartServer Response :" + response);
        }
-   }
+       //Function to help upload file to catalog ONLY if it has successfully been saved to DB
+        @Override
+        public void fileStatus(int response) throws RemoteException {
+            if(response  == 1){
+                savedTODB = true;
+            }else if(response == 0){
+                savedTODB = false;
+            }
+        }
+    }
 }

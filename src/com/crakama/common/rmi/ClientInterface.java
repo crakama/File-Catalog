@@ -11,4 +11,5 @@ import java.rmi.RemoteException;
 
 public interface ClientInterface extends Remote {
     void serverResponse( String response) throws RemoteException;
+    void fileStatus(int response) throws RemoteException;
 }

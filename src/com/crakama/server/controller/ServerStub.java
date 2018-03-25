@@ -80,9 +80,9 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
             fileInterface = new FileCatalog(filename,"kate");
             int code = (fileDao.saveToDB(fileInterface));
             if(code == 1){
-                clientCallbackInterf.serverResponse("FILE STATUS:  " + code + " Successfully Saved to DB!!\n");
+                clientCallbackInterf.fileStatus(code);
             }else{
-                clientCallbackInterf.serverResponse("FILE STATUS:  " + code + " Failed to Save to DB!!\n");
+                clientCallbackInterf.fileStatus(code);
             }
 
         }

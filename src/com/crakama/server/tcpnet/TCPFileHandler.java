@@ -43,7 +43,24 @@ public class TCPFileHandler {
             e.printStackTrace();
         }
     }
+    //TODO: Handle invalid path exception thrown when another process/windows is accessing directory
+    public void upload(String filename, Socket socket){
+        String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalogAlpha\\uploads\\";
+        try {
+            try (BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+                 BufferedOutputStream bufOut = new BufferedOutputStream(
+                         new FileOutputStream(fileLocation + filename))
+            ) {
 
+                byte[] buf = new byte[8192];
+                while (bis.read(buf, 0, buf.length) != -1) {
+                    bufOut.write(buf, 0, buf.length);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void closeConnection(){
             //TODO: Close connections

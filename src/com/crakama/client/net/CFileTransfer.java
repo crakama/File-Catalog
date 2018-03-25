@@ -48,31 +48,6 @@ public class CFileTransfer {
         toServer.flush();
     }
 
-    /**
-     * Read data (bufIn) from a socket connection and write (bufOut) it to file in local computer
-     * @param filename
-     * @param stream
-     */
-    private String download(String filename, InputStream stream) {
-        String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalogAlpha\\downloads\\";
-        try {
-            try (BufferedInputStream bis = new BufferedInputStream(stream);
-                 BufferedOutputStream bufOut = new BufferedOutputStream(
-                         new FileOutputStream(fileLocation + filename))
-            ) {
-
-                byte[] buf = new byte[8192];
-                while (bis.read(buf, 0, buf.length) != -1) {
-                    bufOut.write(buf, 0, buf.length);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return fileLocation;
-    }
-
     private class ListenerThread implements Runnable {
         private final ClientInterface clientCallback;
         private InputStream stream;
@@ -104,6 +79,48 @@ public class CFileTransfer {
                 } finally {
                 }
             }
+        }
+    }
+
+    /**
+     * Read data (bufIn) from a socket connection and write (bufOut) it to file in local computer
+     * @param filename
+     * @param stream
+     */
+    private String download(String filename, InputStream stream) {
+        String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalogAlpha\\downloads\\";
+        try {
+            try (BufferedInputStream bis = new BufferedInputStream(stream);
+                 BufferedOutputStream bufOut = new BufferedOutputStream(
+                         new FileOutputStream(fileLocation + filename))
+            ) {
+
+                byte[] buf = new byte[8192];
+                while (bis.read(buf, 0, buf.length) != -1) {
+                    bufOut.write(buf, 0, buf.length);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return fileLocation;
+    }
+
+    //Start download -Read file from root/project directory and write to buffer, then to socket connection
+    public void from_C_DIR_toBuffer(File fileObj) throws IOException {
+        try {
+            try (BufferedInputStream bis = new BufferedInputStream(
+                    new FileInputStream(fileObj));
+                 BufferedOutputStream bufOut = new BufferedOutputStream(clientSocket.getOutputStream())
+            ) {
+                byte[] buf = new byte[8192];
+                while (bis.read(buf, 0, buf.length) != -1) {
+                    bufOut.write(buf, 0, buf.length);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
