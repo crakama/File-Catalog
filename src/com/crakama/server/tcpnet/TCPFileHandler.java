@@ -9,8 +9,6 @@ import java.net.Socket;
 public class TCPFileHandler {
         private ObjectOutputStream toClient;
         private ObjectInputStream fromClient;
-        private BufferedInputStream bufIn;
-        private BufferedOutputStream bufOut;
 
         public TCPFileHandler(Socket clientSocket) throws IOException {
             this.toClient = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -26,19 +24,23 @@ public class TCPFileHandler {
         MsgProtocol msgProtocol = new MsgProtocol(msgType,response);
         toClient.writeObject(msgProtocol);
         toClient.flush();
-        toClient.reset();
     }
 
+    //Start download -Read file from root/project directory and write to buffer, then to socket connection
     public void fromDIR_toBuffer(File fileObj, Socket socket) throws IOException {
-        System.out.println("FROM CLIENT"+fileObj);
-        //Start download -Read file from root/project directory and write to buffer, then to socket connection
-        bufIn = new BufferedInputStream(new FileInputStream(fileObj));
-        bufOut = new BufferedOutputStream(socket.getOutputStream());
-        byte[] buffer = new byte[4096];
-        int byteRead = 0;
-        while ((byteRead = bufIn.read(buffer))!= -1){
-            bufOut.write(buffer,0,byteRead);
-            bufOut.flush();
+        try {
+            try (BufferedInputStream bis = new BufferedInputStream(
+                    new FileInputStream(fileObj));
+                 BufferedOutputStream bufOut = new BufferedOutputStream(socket.getOutputStream())
+                  ) {
+
+                byte[] buf = new byte[8192];
+                while (bis.read(buf, 0, buf.length) != -1) {
+                    bufOut.write(buf, 0, buf.length);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

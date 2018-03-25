@@ -18,10 +18,7 @@ import java.net.Socket;
 // TODO: Refactor to redirect network operations to NET package which handles transport layer communication
 public class SFileTransfer implements Runnable{
     private Socket socket;
-    private BufferedReader bufReader;
-    private BufferedInputStream bufIn;
-    private BufferedOutputStream bufOut;
-    private FileDao fileDao;
+    private BufferedOutputStream bufOut;;
     private TCPFileHandler tcpFileHandler;
     public SFileTransfer(TCPFileHandler tcpFileHandler, Socket clientSocket) {
         this.socket = clientSocket;
@@ -36,24 +33,20 @@ public class SFileTransfer implements Runnable{
      */
     @Override
     public void run() {
-        while (true){
+        while (socket.isConnected()){
             try{
                MsgProtocol msg = tcpFileHandler.message();
                 switch (msg.getMsgType()){
 
                     case DOWNLOAD:
-                        System.out.println("FROM CLIENT1");
                         String filename = msg.getMsgBody();
-                        System.out.println("FROM CLIENT2"+filename);
                         File fileObj = new File(filename);
                         if(!fileObj.exists()){
                             tcpFileHandler.sendResponse(MsgType.DOWNLOAD_NO,"File Not Found on Server");
                             tcpFileHandler.closeConnection();
                         }else{
                             tcpFileHandler.sendResponse(MsgType.DOWNLOAD_OK,filename);
-                            System.out.println("FROM CLIENT4"+filename);
                             tcpFileHandler.fromDIR_toBuffer(fileObj,socket);
-                            System.out.println("FROM CLIENT5"+filename);
                             tcpFileHandler.closeConnection();
                         }
 
@@ -72,13 +65,14 @@ public class SFileTransfer implements Runnable{
 
     //TODO: Handle invalid path exception thrown when another process/windows is accessing directory
     private void upload(String filename){
+        //TODO bufIn
         String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalogAlpha\\uploads\\";
         try {
             bufOut = new BufferedOutputStream(
                     new FileOutputStream( fileLocation.trim()+ filename));
             byte[] buffer = new byte[8192];
-            int byteRead = 0;
-            while ((byteRead = bufIn.read(buffer))!= -1){
+            int byteRead = 0;//= bufIn.read(buffer);
+            while ((byteRead )!= -1){
                 bufOut.write(buffer,0,byteRead);
                 bufOut.flush();
             }

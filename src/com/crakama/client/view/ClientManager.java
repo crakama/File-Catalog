@@ -4,37 +4,47 @@ import com.crakama.client.net.CFileTransfer;
 import com.crakama.common.rmi.ClientInterface;
 import com.crakama.common.rmi.ServerInterface;
 import com.crakama.common.tcp.MsgType;
+import com.crakama.common.tcp.TCPCLientInterface;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.CompletableFuture;
 
 public class ClientManager implements Runnable{
     ServerInterface serverInterface;
-    //Thread fileworker;
     private final String host = "localhost";
     private final int port = 1213;
     private boolean commandsReceived = false;
     private boolean loginsession = false;
     private BufferedReader userInput;
-    private final ClientInterface clientCallbackInterf;
+    private ClientInterface clientCallbackInterf;
+    private CFileTransfer cFileTransfer;
     public ClientManager() throws RemoteException {
-        clientCallbackInterf = new ClientStub();
+
     }
 
     public void start(ServerInterface serverInterface) {
+        try {
         this.serverInterface = serverInterface;
         commandsReceived = true;
-        new Thread(this).start();
+        cFileTransfer = new CFileTransfer();
+        clientCallbackInterf = new ClientStub();
+            new Thread(this).start();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
      * Inteprate CMD commands read and invoke necessary methods
      */
     public void run() {
-        CFileTransfer cFileTransfer = new CFileTransfer();
+
         while(commandsReceived){
             try {
                 CmdReader cmdReader = new CmdReader(inputHandler());
@@ -43,7 +53,7 @@ public class ClientManager implements Runnable{
                         serverInterface.login(clientCallbackInterf,
                                 cmdReader.getParameters(1),
                                 cmdReader.getParameters(2));
-                        cFileTransfer.start(host,port,clientCallbackInterf);
+                        cFileTransfer.start(host,port, new ClientStub());
                         loginsession = true;
                     break;
                     case LOGOUT:
@@ -85,7 +95,6 @@ public class ClientManager implements Runnable{
 
         }
     }
-
 
    public String inputHandler() throws IOException {
        System.out.println("Enter one of the following Commands to proceed:\n" +
