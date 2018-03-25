@@ -19,7 +19,6 @@ public class CFileTransfer {
     private ClientInterface clientCallbackInterf;
     private InputStream readData;
     private PrintWriter writeData;
-    //private String filename;
     Socket clientSocket;
     BufferedInputStream bufIn;
 
@@ -28,8 +27,7 @@ public class CFileTransfer {
     private ObjectInputStream fromServer;
     private ObjectOutputStream toServer;
     public CFileTransfer(){
-
-    }
+        }
 
     public void start(String host, int port, ClientInterface clientCallbackInterf) {
         try {
@@ -38,9 +36,9 @@ public class CFileTransfer {
             this.clientCallbackInterf = clientCallbackInterf;
             this.fromServer = new ObjectInputStream(clientSocket.getInputStream());
             this.toServer = new ObjectOutputStream(clientSocket.getOutputStream());
+
             this.bufIn = new BufferedInputStream(readData);
             this.bufOut = new BufferedOutputStream(clientSocket.getOutputStream());
-
 
             new Thread(new ListenerThread(clientCallbackInterf)).start();
         } catch (IOException e) {
@@ -48,63 +46,12 @@ public class CFileTransfer {
         }
     }
 
-
-//
-//        if(cmdType== CmdType.DOWNLOAD){
-//
-//            try {
-//                bufOut.write(byt2);
-//                bufOut.flush();
-//
-//                this.writeData = new PrintWriter(clientSocket.getOutputStream(),true);
-//                writeData.println(filename);
-//                //writeData.println("\0");
-//                writeData.flush();
-//                System.out.println("Value of writeData:"+ filename);
-//                int downloadcode = bufIn.read();
-//                if(downloadcode == 1){
-//                    System.out.println("downloadcode 1"+ downloadcode);
-//                    String location = download();
-//                    clientCallbackInterf.serverResponse("DOWNLOAD: Download Successful!!!, find it in "+location);
-//                }else {
-//                    System.out.println("downloadcode 0"+ downloadcode);
-//                    clientCallbackInterf.serverResponse("FileCatalog Not Found on the Server!!!, " +
-//                            "Check the name and try again");
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }else if(cmdType==CmdType.UPLOAD){
-//            byte byt3 = (byte) 3;
-//            try {
-//                bufOut.write(byt3);
-//                bufOut.flush();
-//                writeData.println(filename);
-//                File file = new File(filename);
-//                if(!file.exists()){
-//                 clientCallbackInterf.serverResponse("The file you are trying to upload does not exist");
-//                    closeConnection();
-//                }else{
-//                    bufIn = new BufferedInputStream(new FileInputStream(file));
-//                    byte[] buffer = new byte[8192];
-//                    int byteRead = 0;
-//                    while ((byteRead = bufIn.read(buffer))!= -1){
-//                        bufOut.write(buffer,0,byteRead);
-//                        bufOut.flush();
-//                    }
-//                    closeConnection();
-//                    clientCallbackInterf.serverResponse("UPLOAD: Upload Successful!!!");
-//                }
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
     public void sendMsg(MsgType type, String body) throws IOException {
         MsgProtocol msg = new MsgProtocol(type,body);
         toServer.writeObject(msg);
         toServer.flush();
         toServer.reset();
+        System.out.println("SENT TO SERVER");
     }
 
     /**
@@ -112,6 +59,7 @@ public class CFileTransfer {
      * @param filename
      */
     private String download(String filename) {
+        System.out.println("download"+filename);
         String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalogAlpha\\downloads\\";
         try {
 
@@ -129,29 +77,6 @@ public class CFileTransfer {
         return fileLocation;
     }
 
-    private void closeConnection() {
-        try {
-            if (bufOut != null) {
-                bufOut.close();
-            }
-            if (bufReader != null) {
-                bufReader.close();
-            }
-            if (bufIn != null) {
-                bufIn.close();
-            }
-            if (bufOut != null) {
-                clientSocket.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void connect() {
-    }
-
     private class ListenerThread implements Runnable {
         private final ClientInterface clientCallback;
         public ListenerThread(ClientInterface clientCallbackInterf) {
@@ -164,13 +89,16 @@ public class CFileTransfer {
          */
         @Override
         public void run() {
-            while (clientSocket.isConnected()) {
+            while (clientSocket.isConnected()){
                 try {
+                    System.out.println("run");
                     MsgProtocol msg = (MsgProtocol) fromServer.readObject();
+                    System.out.println("MsgProtocol"+msg);
                     switch (msg.getMsgType()) {
                         case DOWNLOAD_OK:
+                            System.out.println("DOWNLOAD_OK");
                             String location = download(msg.getMsgBody());
-                            clientCallback.serverResponse( + location);
+                            clientCallback.serverResponse( "DOWNLOAD: Download Successful!!!, find it in "+ location);
                             break;
                         case UPLOAD:
 

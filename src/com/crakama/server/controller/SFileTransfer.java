@@ -25,7 +25,6 @@ public class SFileTransfer implements Runnable{
     private TCPFileHandler tcpFileHandler;
     public SFileTransfer(TCPFileHandler tcpFileHandler, Socket clientSocket) {
         this.socket = clientSocket;
-        //fileDao = new FileDao(dbms,datasource);
         this.tcpFileHandler = tcpFileHandler;
     }
     /**
@@ -37,20 +36,24 @@ public class SFileTransfer implements Runnable{
      */
     @Override
     public void run() {
-        while (socket.isConnected()){
+        while (true){
             try{
                MsgProtocol msg = tcpFileHandler.message();
                 switch (msg.getMsgType()){
 
                     case DOWNLOAD:
+                        System.out.println("FROM CLIENT1");
                         String filename = msg.getMsgBody();
+                        System.out.println("FROM CLIENT2"+filename);
                         File fileObj = new File(filename);
                         if(!fileObj.exists()){
                             tcpFileHandler.sendResponse(MsgType.DOWNLOAD_NO,"File Not Found on Server");
                             tcpFileHandler.closeConnection();
                         }else{
-                            tcpFileHandler.fromDIR_toBuffer(fileObj,socket);
                             tcpFileHandler.sendResponse(MsgType.DOWNLOAD_OK,filename);
+                            System.out.println("FROM CLIENT4"+filename);
+                            tcpFileHandler.fromDIR_toBuffer(fileObj,socket);
+                            System.out.println("FROM CLIENT5"+filename);
                             tcpFileHandler.closeConnection();
                         }
 

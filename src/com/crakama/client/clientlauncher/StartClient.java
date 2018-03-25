@@ -1,7 +1,7 @@
 package com.crakama.client.clientlauncher;
 
 import com.crakama.client.view.ClientManager;
-import com.crakama.common.ServerInterface;
+import com.crakama.common.rmi.ServerInterface;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;

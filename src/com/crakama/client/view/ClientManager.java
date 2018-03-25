@@ -20,11 +20,8 @@ public class ClientManager implements Runnable{
     private boolean loginsession = false;
     private BufferedReader userInput;
     private final ClientInterface clientCallbackInterf;
-    //private final CFileTransfer clientFileHandler;
     public ClientManager() throws RemoteException {
         clientCallbackInterf = new ClientStub();
-        //clientFileHandler = new CFileTransfer();
-        //fileworker = new Thread(clientFileHandler);
     }
 
     public void start(ServerInterface serverInterface) {
@@ -65,8 +62,7 @@ public class ClientManager implements Runnable{
                     case DOWNLOAD:
                         if(loginsession==true){
                             cFileTransfer.sendMsg(MsgType.DOWNLOAD,cmdReader.getParameters(1));
-//                            new CFileTransfer().start(host,port,clientCallbackInterf,
-//                                    cmdReader.getCmd(), cmdReader.getParameters(1));
+
                         }else {
                             clientCallbackInterf.serverResponse("You need to Register and " +
                                     "Login to View the file");
@@ -77,9 +73,6 @@ public class ClientManager implements Runnable{
                         if(loginsession==true){
                             serverInterface.checkfile(clientCallbackInterf,
                                     cmdReader.getParameters(1));
-
-                            new CFileTransfer().start(host,port,clientCallbackInterf,
-                                    cmdReader.getCmd(),cmdReader.getParameters(1));
                         }else {
                             clientCallbackInterf.serverResponse("You need to Register and " +
                                     "Login to Upload the file");
