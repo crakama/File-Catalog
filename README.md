@@ -31,8 +31,13 @@ Owners have all permissions for their files.
 catalog and their attributes. Note that if a file is marked as private, it can be listed
 only by its owner.
 
-- A user can request to be informed when other users access one of its public files.
-The user tells the server for which of its files it wants to be informed. When that
-public file has been read or updated by another user, the server tells the owner who
-performed the action, and what action was taken.
-The files in the catalog are stored on the server’s file system under a specified directory.
+- A user can request to be notified when other users access one of its public files.
+  The user tells the server for which files it wants to be notified. When one of those
+  public files has been read or updated by another user, the server tells the owner
+  who performed the action, and what action was taken. It is sufficient that this
+  works as long as the user remains online as described by the following scenario.
+  A user requests notification, a file is accessed, that user is notified, the user goes
+  offline, a file is accessed, the user is not notified, the user comes online again, a file
+  is accessed, the user is still not notified.
+The files in the catalog are stored on the server’s file system under a specified directory(all files in a directory
+                                                                                            dedicated to that purpose).

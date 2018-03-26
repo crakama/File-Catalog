@@ -1,5 +1,6 @@
 package com.crakama.server.controller;
 
+import com.crakama.client.view.CmdType;
 import com.crakama.common.rmi.ClientInterface;
 import com.crakama.common.rmi.ServerInterface;
 import com.crakama.server.model.*;
@@ -8,7 +9,9 @@ import java.io.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This is the only class(StartServer Stub) that clients can use to reach the server remotely.
@@ -19,7 +22,7 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
     private final FileDao fileDao;
     private UserInterface userInterface;
     private FileInterface fileInterface;
-
+    private Map<String,ClientInterface> monitoredFiles = new ConcurrentHashMap<>();
     /**
      * Constructor calls on superclass U.R.O to handle exporting operations
      * @throws RemoteException
@@ -94,7 +97,8 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
     }
 
     @Override
-    public void readFile(ClientInterface clientCallbackInterf, String filename) throws RemoteException {
+    public void readFile(CmdType read, String currentUser,
+                         ClientInterface clientCallbackInterf, String filename) throws RemoteException {
         String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalogAlpha\\uploads\\";
         StringBuilder filecontents = new StringBuilder();
         try {
@@ -112,11 +116,24 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
         }
         String[] lines = filecontents.toString().split("\n");
         clientCallbackInterf.fileContents(lines);
-
+        notifyFileOwner(read,filename,currentUser);
+    }
+    private void notifyFileOwner(CmdType cmd,String filename,String currentUser) throws RemoteException {
+        FileCatalog fileObj=fileDao.findFileByName(filename);
+        if(((fileObj!=null))&&(!(fileObj.getOwner().equalsIgnoreCase(currentUser)))){
+            fileObj.getOwner();
+            for(String filekey: monitoredFiles.keySet()){
+                if(filename.equalsIgnoreCase(filekey)){
+                    ClientInterface obj = monitoredFiles.get(filekey);
+                    obj.serverResponse(" A :"+cmd +" operation was performed on your public file:"+
+                            filename+"by user :"+currentUser);
+                }
+            }
+        }
     }
 
     @Override
-    public void writeFile(ClientInterface clientCallbackInterf, String filename,
+    public void writeFile(CmdType edit, String loggeduser, ClientInterface clientCallbackInterf, String filename,
                           String filecontents) throws RemoteException {
         String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalogAlpha\\uploads\\";
         File file = new File(fileLocation+filename);
@@ -127,6 +144,7 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
                 FileOutputStream fout = new FileOutputStream(file,true);
                 fout.write(filecontents.getBytes());
                 fout.close();
+                notifyFileOwner(edit,filename,loggeduser);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -171,5 +189,22 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
         String[] lines = allfiles.toString().split("\n");
         clientCallbackInterf.fileContents(lines);
 
+    }
+
+    @Override
+    public void fileMonitor(ClientInterface clientCallbackInterf, String filename) {
+        monitoredFiles.put(filename,clientCallbackInterf);
+    }
+
+    @Override
+    public void stopMonitors(ClientInterface clientCallbackInterf, List<String> monitors) {
+        for(String filekey: monitoredFiles.keySet()){
+            for(String monitor:monitors){
+                if(monitor.equalsIgnoreCase(filekey)){
+                    System.out.println("REMOVED KEY"+ filekey);
+                    monitoredFiles.remove(filekey);
+                }
+            }
+        }
     }
 }

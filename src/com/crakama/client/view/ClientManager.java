@@ -4,7 +4,6 @@ import com.crakama.client.net.CFileTransfer;
 import com.crakama.common.rmi.ClientInterface;
 import com.crakama.common.rmi.ServerInterface;
 import com.crakama.common.tcp.MsgType;
-import com.crakama.server.model.FileInterface;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -15,6 +14,7 @@ import java.nio.file.attribute.FileOwnerAttributeView;
 import java.nio.file.attribute.UserPrincipal;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -29,6 +29,7 @@ public class ClientManager implements Runnable{
     private ClientInterface clientCallbackInterf;
     private CFileTransfer cFileTransfer;
     boolean savedTODB = false;
+    private ArrayList<String> filemonitor;
     Queue<String> loggedInUser = new ConcurrentLinkedQueue<>();
     public ClientManager() throws RemoteException {
 
@@ -40,6 +41,7 @@ public class ClientManager implements Runnable{
         commandsReceived = true;
         cFileTransfer = new CFileTransfer();
         clientCallbackInterf = new ClientStub();
+            filemonitor = new ArrayList<>();
             new Thread(this).start();
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -66,6 +68,7 @@ public class ClientManager implements Runnable{
                     case LOGOUT:
                         String user = loggedInUser.poll();
                         loggedInUser.clear();
+                        serverInterface.stopMonitors(clientCallbackInterf,getMonitors());
                         loginsession = false;
                         clientCallbackInterf.serverResponse("User by name, "+user+
                                 " has been successfully logged out of the system ");
@@ -95,15 +98,22 @@ public class ClientManager implements Runnable{
                                     "Login to Upload the file"); }
                         break;
                     case READ:
-                        permission(cmdReader.getCmd(),clientCallbackInterf,cmdReader.getParameters(1),null);
+                        permission(cmdReader.getCmd(),clientCallbackInterf,loggedInUser.peek(),
+                                cmdReader.getParameters(1),null);
                         break;
                     case EDIT:
                         permission(cmdReader.getCmd(),clientCallbackInterf,
-                                cmdReader.getParameters(1),cmdReader.getParameters(2));
+                                loggedInUser.peek(), cmdReader.getParameters(1),
+                                cmdReader.getParameters(2));
                         break;
                     case LIST:
                         serverInterface.listfiles(clientCallbackInterf);
-
+                        break;
+                    case NOTIFY:
+                        this.monitor(cmdReader.getParameters(1));
+                        serverInterface.fileMonitor(clientCallbackInterf,cmdReader.getParameters(1));
+                        //TODO: Alternative solution, store all notification subscription on DB &
+                        // TODO: use REGISTER/DE-REGISTER mechanism, to avoid loops
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -111,7 +121,17 @@ public class ClientManager implements Runnable{
 
         }
     }
+    private List<String> getMonitors(){
+        List<String> monfiles = new ArrayList<>();
 
+        for( int i = 0; i < monfiles.size(); i++) {
+            monfiles.add(filemonitor.get(i));
+        }
+        return monfiles ;
+    }
+    private void monitor(String filename){
+        filemonitor.add(filename);
+    }
     private void uploadFile(ClientInterface clientCallbackInterf, String param1, String param2) throws IOException {
         serverInterface.checkfile(clientCallbackInterf,
                 param1,loggedInUser.peek(),param2,50);
@@ -124,17 +144,18 @@ public class ClientManager implements Runnable{
             this.clientCallbackInterf.serverResponse("Operation save to database Failed");
         }
     }
-    private void permission(CmdType cmd, ClientInterface clientCallbackInterf, String param1, String param2) throws RemoteException {
+    private void permission(CmdType cmd, ClientInterface clientCallbackInterf, String loggeduser,
+                            String param1, String param2) throws RemoteException {
         int permission = serverInterface.checkAccessPermission(this.clientCallbackInterf,
-                param1,loggedInUser.peek());
+                param1,loggeduser);
         if(permission == 0){
             this.clientCallbackInterf.serverResponse("You do not have enough permission to read this file," +
                     "Contact the file owner");
         }else if(permission == 1 ){
             if(cmd.equals(CmdType.READ)){
-                serverInterface.readFile(clientCallbackInterf,param1);
+                serverInterface.readFile(CmdType.READ,loggeduser,clientCallbackInterf,param1);
             }else if(cmd.equals(CmdType.EDIT)){
-                serverInterface.writeFile(clientCallbackInterf,
+                serverInterface.writeFile(CmdType.EDIT,loggeduser,clientCallbackInterf,
                         param1,
                         param2);
             }

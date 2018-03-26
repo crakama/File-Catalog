@@ -1,7 +1,10 @@
 package com.crakama.common.rmi;
 
+import com.crakama.client.view.CmdType;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 
 
 /**
@@ -17,11 +20,15 @@ public interface ServerInterface extends Remote {
 
     void checkfile(ClientInterface clientCallbackInterf, String parameters, String kate, String filename, int i) throws RemoteException;
 
-    void readFile(ClientInterface clientCallbackInterf, String input) throws RemoteException;
+    void readFile(CmdType read, String loggeduser, ClientInterface clientCallbackInterf, String input) throws RemoteException;
 
-    void writeFile(ClientInterface clientCallbackInterf, String parameters, String cmdReaderParameters) throws RemoteException;
+    void writeFile(CmdType edit, String loggeduser, ClientInterface clientCallbackInterf, String parameters, String cmdReaderParameters) throws RemoteException;
 
     int checkAccessPermission(ClientInterface clientCallbackInterf, String peek, String s) throws RemoteException;
 
     void listfiles(ClientInterface clientCallbackInterf) throws RemoteException;
+
+    void fileMonitor(ClientInterface clientCallbackInterf, String parameters) throws RemoteException;
+
+    void stopMonitors(ClientInterface clientCallbackInterf, List<String> monitors) throws RemoteException;
 }
