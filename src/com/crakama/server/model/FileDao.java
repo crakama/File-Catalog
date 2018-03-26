@@ -195,7 +195,7 @@ public class FileDao {
             findFileStmt.setString(1,name);
             ResultSet rs = findFileStmt.executeQuery();
             if(rs.next()){
-                return new FileCatalog(name,rs.getString(FOWNER),this);
+                return new FileCatalog(name,rs.getString(FOWNER),rs.getString(ACCESS_MODE),this);
             }
         } catch (SQLException e) {
             e.printStackTrace();

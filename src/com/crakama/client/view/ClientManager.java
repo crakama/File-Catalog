@@ -4,7 +4,6 @@ import com.crakama.client.net.CFileTransfer;
 import com.crakama.common.rmi.ClientInterface;
 import com.crakama.common.rmi.ServerInterface;
 import com.crakama.common.tcp.MsgType;
-import com.crakama.server.model.User;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -110,26 +109,36 @@ public class ClientManager implements Runnable{
                         }
                         break;
                     case READ:
-                        int permission = serverInterface.checkAccessPermission(clientCallbackInterf,
-                                cmdReader.getParameters(1),loggedInUser.peek());
-                        if(permission == 0){
-                           clientCallbackInterf.serverResponse("You do not have enough permission to read this file," +
-                                   "Contact the owner");
-                        }else if(permission == 1 ){
-                            serverInterface.readFile(clientCallbackInterf,cmdReader.getParameters(1));
-                        }else {
-                            clientCallbackInterf.serverResponse("Problem Retrieving file, Contact IT Administrator");
-                        }
+                        permission(cmdReader.getCmd(),clientCallbackInterf,cmdReader.getParameters(1),null);
                         break;
                     case WRITE:
-                        serverInterface.writeFile(clientCallbackInterf,
-                                cmdReader.getParameters(1),
-                                cmdReader.getParameters(2));
+                        permission(cmdReader.getCmd(),clientCallbackInterf,
+                                cmdReader.getParameters(1),cmdReader.getParameters(2));
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
+        }
+    }
+
+    private void permission(CmdType cmd, ClientInterface clientCallbackInterf, String param1, String param2) throws RemoteException {
+        int permission = serverInterface.checkAccessPermission(this.clientCallbackInterf,
+                param1,loggedInUser.peek());
+        if(permission == 0){
+            this.clientCallbackInterf.serverResponse("You do not have enough permission to read this file," +
+                    "Contact the file owner");
+        }else if(permission == 1 ){
+            if(cmd.equals(CmdType.READ)){
+                serverInterface.readFile(clientCallbackInterf,param1);
+            }else{
+                serverInterface.writeFile(clientCallbackInterf,
+                        param1,
+                        param2);
+            }
+        }else {
+            this.clientCallbackInterf.serverResponse("Problem Retrieving file, Contact IT Administrator");
         }
     }
     private long getfileSize(String input){
