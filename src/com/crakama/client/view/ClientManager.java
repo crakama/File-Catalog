@@ -115,8 +115,10 @@ public class ClientManager implements Runnable{
                         if(permission == 0){
                            clientCallbackInterf.serverResponse("You do not have enough permission to read this file," +
                                    "Contact the owner");
-                        }else {
+                        }else if(permission == 1 ){
                             serverInterface.readFile(clientCallbackInterf,cmdReader.getParameters(1));
+                        }else {
+                            clientCallbackInterf.serverResponse("Problem Retrieving file, Contact IT Administrator");
                         }
                         break;
                     case WRITE:

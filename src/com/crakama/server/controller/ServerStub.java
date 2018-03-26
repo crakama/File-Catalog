@@ -140,9 +140,19 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
     public int checkAccessPermission(ClientInterface clientCallbackInterf,
                                      String filename, String currentUser) throws RemoteException {
         FileCatalog fileObj=fileDao.findFileByName(filename);
-        if((fileObj != null)&& (fileObj.getOwner().equalsIgnoreCase(currentUser))){
+
+        if((fileObj != null)&&(fileObj.getAccessMode().equalsIgnoreCase("private"))
+                &&(fileObj.getOwner().equalsIgnoreCase(currentUser))){
+            return 1;
+        }else if((fileObj != null)&&(fileObj.getAccessMode().equalsIgnoreCase("public"))){
             return 1;
         }
-        return 0;
+        else if((fileObj != null)&&(fileObj.getAccessMode().equalsIgnoreCase("private"))
+                &&(!(fileObj.getOwner().equalsIgnoreCase(currentUser)))) {
+            return 0;
+        }else {
+            return 2;
+        }
+
     }
 }
