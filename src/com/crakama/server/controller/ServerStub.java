@@ -4,8 +4,11 @@ import com.crakama.common.rmi.ClientInterface;
 import com.crakama.common.rmi.ServerInterface;
 import com.crakama.server.model.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Scanner;
 
 /**
  * This is the only class(StartServer Stub) that clients can use to reach the server remotely.
@@ -52,6 +55,8 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
             if ((userObj.getUserName().equalsIgnoreCase(name))&& (( userObj.getPassword().equalsIgnoreCase(password) ))){
                 clientCallbackInterf.serverResponse("VERIFICATION: Login of user :"+
                         userObj.getUserName()+ " with password :"+userObj.getPassword()+" was Successful!!!");
+                clientCallbackInterf.currentUser(userObj.getUserName(),userObj.getPassword());
+
             }else if(!((userObj.getUserName().equalsIgnoreCase(name))&& (( userObj.getPassword().equalsIgnoreCase(password) )))) {
                 clientCallbackInterf.serverResponse("VERIFICATION: Incorrect Credentials, Please try again!!!");
             }
@@ -73,11 +78,11 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
     }
 
     @Override
-    public void checkfile(ClientInterface clientCallbackInterf, String filename) throws RemoteException {
+    public void checkfile(ClientInterface clientCallbackInterf, String filename, String fowner, String accessmode, int fsize) throws RemoteException {
         if(fileDao.findFileByName(filename) != null){
             clientCallbackInterf.serverResponse("\nFile has to be Unique!!!,Please try another name\n");
         }else{
-            fileInterface = new FileCatalog(filename,"kate");
+            fileInterface = new FileCatalog(filename,fowner,accessmode,fsize);
             int code = (fileDao.saveToDB(fileInterface));
             if(code == 1){
                 clientCallbackInterf.fileStatus(code);
@@ -86,5 +91,28 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
             }
 
         }
+    }
+
+    @Override
+    public void readFile(ClientInterface clientCallbackInterf, String filename) throws RemoteException {
+        String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalogAlpha\\uploads\\";
+        StringBuilder filecontents = new StringBuilder();
+        try {
+            File file = new File(fileLocation+filename);
+            Scanner filescanner = new Scanner(file);
+
+            while(filescanner.hasNext()){
+                String content = filescanner.nextLine().trim();
+                filecontents.append(content);
+                filecontents.append("\n");
+            }
+
+        } catch (FileNotFoundException e) {
+            clientCallbackInterf.serverResponse("No such file in the system");
+
+        }
+        String[] lines = filecontents.toString().split("\n");
+        clientCallbackInterf.fileContents(lines);
+
     }
 }

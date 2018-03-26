@@ -70,8 +70,9 @@ public class CFileTransfer {
                             String location = download(msg.getMsgBody(),stream);
                             clientCallback.serverResponse( "DOWNLOAD: Download Successful!!!, find it in "+ location);
                             break;
-                        case UPLOAD:
-
+                        case UPLOAD_OK:
+                            //TODO:Can't be processed because sending process at server stalls
+                            clientCallback.serverResponse( "UPLOAD: Upload of file "+msg.getMsgBody()+" to Server Successful!!!");
                             break;
                     }
                 } catch (ClassNotFoundException | IOException e) {
@@ -109,6 +110,7 @@ public class CFileTransfer {
 
     //Start download -Read file from root/project directory and write to buffer, then to socket connection
     public void from_C_DIR_toBuffer(File fileObj) throws IOException {
+        //TODO:File access
         try {
             try (BufferedInputStream bis = new BufferedInputStream(
                     new FileInputStream(fileObj));
@@ -122,5 +124,9 @@ public class CFileTransfer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void openFile(String filename){
+
     }
 }

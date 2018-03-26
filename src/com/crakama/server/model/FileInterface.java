@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public interface FileInterface extends Serializable{
     String getUserName();
-
-    String getPassword();
+    String getAccessMode();
+    int getSize();
+    String getOwner();
 }

@@ -51,8 +51,9 @@ public class SFileTransfer implements Runnable{
 
                         break;
                     case UPLOAD:
-                        //tcpFileHandler.sendResponse(MsgType.UPLOAD_OK,filename);
                         tcpFileHandler.upload(filename,socket);
+                        //TODO:This response stalls,can't send twice-file & response, why???
+                        //tcpFileHandler.sendResponse(MsgType.UPLOAD_OK,filename);
                         break;
                 }
             }catch (ClassNotFoundException|IOException e){

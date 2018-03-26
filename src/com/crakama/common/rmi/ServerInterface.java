@@ -1,7 +1,5 @@
 package com.crakama.common.rmi;
 
-import com.crakama.common.rmi.ClientInterface;
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -17,5 +15,7 @@ public interface ServerInterface extends Remote {
     void login(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException;
     void unregister(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException;
 
-    void checkfile(ClientInterface clientCallbackInterf, String filename) throws RemoteException;
+    void checkfile(ClientInterface clientCallbackInterf, String parameters, String kate, String filename, int i) throws RemoteException;
+
+    void readFile(ClientInterface clientCallbackInterf, String input) throws RemoteException;
 }

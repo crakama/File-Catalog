@@ -13,7 +13,7 @@ public class FileDao {
     private static final String FNAME ="fname";
     private static final String FSIZE ="fsize";
     private static final String FOWNER ="fowner";
-    private static final String ACCESS_P ="faccessPerm";
+    private static final String ACCESS_MODE ="filemode";
     private static final String[] tables = new String[2];
 
     public FileDao(String dbms,String datasource){
@@ -60,12 +60,12 @@ public class FileDao {
                 + " WHERE USERNAME = ?");
         findFileStmt = conn.prepareStatement("SELECT * FROM "
                 + tables[1]
-                + " WHERE USERNAME = ?");
+                + " WHERE fname = ?");
         loginUserStmt = conn.prepareStatement("SELECT * FROM "
                 + tables[0]
                 + " WHERE USERNAME = ? AND PASS= ?");
-        //createFileInfo = conn.prepareStatement("INSERT INTO " + tables[1] + " VALUES(?, ?, ?, ?)");
-        createFileInfo = conn.prepareStatement("INSERT INTO " + tables[1] + " VALUES(?, ?)");
+        createFileInfo = conn.prepareStatement("INSERT INTO " + tables[1] + " VALUES(?, ?, ?, ?)");
+        //createFileInfo = conn.prepareStatement("INSERT INTO " + tables[1] + " VALUES(?, ?)");
     }
 
     /**
@@ -108,18 +108,24 @@ public class FileDao {
 
     private void createTable(Connection con, String table) throws SQLException {
         Statement statement = con.createStatement();
-        statement.executeUpdate("CREATE TABLE " + table
-                + " (" + USER_COLUMN_NAME + " VARCHAR(32) PRIMARY KEY, "
-                + PASS_COLUMN_NAME + " VARCHAR(32))" );
-
+        System.out.println("Parameters at createTable" + table);
+        if(table.equalsIgnoreCase("userInfo")){
+            statement.executeUpdate("CREATE TABLE " + table
+                    + " (" + USER_COLUMN_NAME + " VARCHAR(32) PRIMARY KEY, "
+                    + PASS_COLUMN_NAME + " VARCHAR(32))" );
+        }else {
+            statement.executeUpdate("CREATE TABLE " + table
+                    + " (" + FNAME + " VARCHAR(32), "
+                    + FOWNER + " VARCHAR(32), "
+                    + ACCESS_MODE + " VARCHAR(32), "
+                    + FSIZE + " INT)");
+        }
     }
 
 
     public User registerUser(UserInterface userImpl) {
         String name = userImpl.getUserName();
         String password = userImpl.getPassword();
-        System.out.println("Parameters at regUser" + name + password);
-
         try {
             createUserStmt.setString(2,password);
             createUserStmt.setString(1,name);
@@ -165,12 +171,14 @@ public class FileDao {
 
     public int saveToDB(FileInterface fileInterface) {
         String name = fileInterface.getUserName();
-        String password = fileInterface.getPassword();
-        System.out.println("Parameters at regUser" + name + password);
-
+        String owner = fileInterface.getOwner();
+        String access = fileInterface.getAccessMode();
+        int size = fileInterface.getSize();
         try {
-            createFileInfo.setString(2,password);
             createFileInfo.setString(1,name);
+            createFileInfo.setString(2,owner);
+            createFileInfo.setString(3,access);
+            createFileInfo.setInt(4,size);
             int row = createFileInfo.executeUpdate();
             if(row != 1){
                 int code = 0;
@@ -187,7 +195,7 @@ public class FileDao {
             findFileStmt.setString(1,name);
             ResultSet rs = findFileStmt.executeQuery();
             if(rs.next()){
-                return new FileCatalog(name,rs.getString(PASS_COLUMN_NAME),this);
+                return new FileCatalog(name,this);
             }
         } catch (SQLException e) {
             e.printStackTrace();
