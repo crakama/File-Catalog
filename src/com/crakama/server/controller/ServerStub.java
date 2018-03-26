@@ -4,8 +4,7 @@ import com.crakama.common.rmi.ClientInterface;
 import com.crakama.common.rmi.ServerInterface;
 import com.crakama.server.model.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
@@ -106,13 +105,32 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
                 filecontents.append(content);
                 filecontents.append("\n");
             }
-
         } catch (FileNotFoundException e) {
             clientCallbackInterf.serverResponse("No such file in the system");
 
         }
         String[] lines = filecontents.toString().split("\n");
         clientCallbackInterf.fileContents(lines);
+
+    }
+
+    @Override
+    public void writeFile(ClientInterface clientCallbackInterf, String filename, String filecontents) throws RemoteException {
+        String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalogAlpha\\uploads\\";
+        File file = new File(fileLocation+filename);
+        if (!(file.exists())){
+            clientCallbackInterf.serverResponse("No such file in the system");
+        }else {
+            try {
+                FileOutputStream fout = new FileOutputStream(file,true);
+                fout.write(filecontents.getBytes());
+                fout.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 }

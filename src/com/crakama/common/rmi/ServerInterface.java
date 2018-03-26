@@ -18,4 +18,6 @@ public interface ServerInterface extends Remote {
     void checkfile(ClientInterface clientCallbackInterf, String parameters, String kate, String filename, int i) throws RemoteException;
 
     void readFile(ClientInterface clientCallbackInterf, String input) throws RemoteException;
+
+    void writeFile(ClientInterface clientCallbackInterf, String parameters, String cmdReaderParameters) throws RemoteException;
 }

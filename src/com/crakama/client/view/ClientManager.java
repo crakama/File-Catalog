@@ -108,9 +108,12 @@ public class ClientManager implements Runnable{
                         }
                         break;
                     case READ:
-                        String input = cmdReader.getParameters(1);
-                        serverInterface.readFile(clientCallbackInterf,input);
+                        serverInterface.readFile(clientCallbackInterf,cmdReader.getParameters(1));
                         break;
+                    case WRITE:
+                        serverInterface.writeFile(clientCallbackInterf,
+                                cmdReader.getParameters(1),
+                                cmdReader.getParameters(2));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
