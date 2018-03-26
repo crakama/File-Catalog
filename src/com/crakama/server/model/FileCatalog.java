@@ -27,10 +27,9 @@ public class FileCatalog implements FileInterface{
         this(filename,fowner,access,fsize,null);
     }
 
-    public FileCatalog(String filename, FileDao fileDao) {
-        this(filename,null,null,0,null);
+    public FileCatalog(String filename, String owner, FileDao fileDao) {
+        this(filename,owner,null,0,null);
     }
-
 
     @Override
     public String getUserName() {

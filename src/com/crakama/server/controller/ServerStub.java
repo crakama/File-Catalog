@@ -115,7 +115,8 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
     }
 
     @Override
-    public void writeFile(ClientInterface clientCallbackInterf, String filename, String filecontents) throws RemoteException {
+    public void writeFile(ClientInterface clientCallbackInterf, String filename,
+                          String filecontents) throws RemoteException {
         String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalogAlpha\\uploads\\";
         File file = new File(fileLocation+filename);
         if (!(file.exists())){
@@ -132,5 +133,16 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
             }
         }
 
+    }
+
+    //TODO: Take care of if file not found
+    @Override
+    public int checkAccessPermission(ClientInterface clientCallbackInterf,
+                                     String filename, String currentUser) throws RemoteException {
+        FileCatalog fileObj=fileDao.findFileByName(filename);
+        if((fileObj != null)&& (fileObj.getOwner().equalsIgnoreCase(currentUser))){
+            return 1;
+        }
+        return 0;
     }
 }

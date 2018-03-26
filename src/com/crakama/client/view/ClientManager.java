@@ -64,6 +64,8 @@ public class ClientManager implements Runnable{
                     break;
                     case LOGOUT:
                         String user = loggedInUser.poll();
+                        loggedInUser.clear();
+                        System.out.println(loggedInUser.poll());
                         loginsession = false;
                         clientCallbackInterf.serverResponse("User by name, "+user+
                                 " has been successfully logged out of the system ");
@@ -92,7 +94,7 @@ public class ClientManager implements Runnable{
                         if(loginsession==true){
 
                             serverInterface.checkfile(clientCallbackInterf,
-                                    cmdReader.getParameters(1),"kate",cmdReader.getParameters(2),50);
+                                    cmdReader.getParameters(1),loggedInUser.peek(),cmdReader.getParameters(2),50);
                             //long filesize = getfileSize(input);
                             if(savedTODB){
                                 cFileTransfer.sendMsg(MsgType.UPLOAD,cmdReader.getParameters(1));
@@ -108,7 +110,14 @@ public class ClientManager implements Runnable{
                         }
                         break;
                     case READ:
-                        serverInterface.readFile(clientCallbackInterf,cmdReader.getParameters(1));
+                        int permission = serverInterface.checkAccessPermission(clientCallbackInterf,
+                                cmdReader.getParameters(1),loggedInUser.peek());
+                        if(permission == 0){
+                           clientCallbackInterf.serverResponse("You do not have enough permission to read this file," +
+                                   "Contact the owner");
+                        }else {
+                            serverInterface.readFile(clientCallbackInterf,cmdReader.getParameters(1));
+                        }
                         break;
                     case WRITE:
                         serverInterface.writeFile(clientCallbackInterf,

@@ -20,4 +20,6 @@ public interface ServerInterface extends Remote {
     void readFile(ClientInterface clientCallbackInterf, String input) throws RemoteException;
 
     void writeFile(ClientInterface clientCallbackInterf, String parameters, String cmdReaderParameters) throws RemoteException;
+
+    int checkAccessPermission(ClientInterface clientCallbackInterf, String peek, String s) throws RemoteException;
 }
