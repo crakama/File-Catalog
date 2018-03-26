@@ -2,7 +2,7 @@ package com.crakama.server.model;
 
 public class FileCatalog implements FileInterface{
 
-    private String username,owner,access;
+    private String fname,owner,access;
     private int size;
     private FileDao fileDao;
 
@@ -12,7 +12,7 @@ public class FileCatalog implements FileInterface{
      * @param fileDao
      */
     public FileCatalog(String name, String owner,String access, int fsize, FileDao fileDao){
-        this.username = name;
+        this.fname = name;
         this.owner = owner;
         this.access = access;
         this.size = fsize;
@@ -32,11 +32,6 @@ public class FileCatalog implements FileInterface{
     }
 
     @Override
-    public String getUserName() {
-        return username;
-    }
-
-    @Override
     public String getAccessMode() {
         return access;
     }
@@ -44,6 +39,11 @@ public class FileCatalog implements FileInterface{
     @Override
     public int getSize() {
         return size;
+    }
+
+    @Override
+    public String getFileName() {
+        return fname;
     }
 
     @Override
@@ -60,11 +60,15 @@ public class FileCatalog implements FileInterface{
      */
     public String toString(){
         StringBuilder builder = new StringBuilder();
-        builder.append(", File: ");
-        builder.append(username);
-        builder.append(" owned by: ");
+        builder.append(", File: [");
+        builder.append(fname);
+        builder.append(", Owner: ");
         builder.append(owner);
+        builder.append(", Access Mode: ");
+        builder.append(access);
+        builder.append(", Size: ");
+        builder.append(size);
+        builder.append("]");
         return builder.toString();
     }
-
 }

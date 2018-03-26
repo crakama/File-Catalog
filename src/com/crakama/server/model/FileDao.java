@@ -1,10 +1,14 @@
 package com.crakama.server.model;
 
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class FileDao {
+public class FileDao extends UnicastRemoteObject {
     private PreparedStatement createUserStmt,deleteUserStmt,
-            findUserStmt,loginUserStmt,createFileInfo,findFileStmt;
+            findUserStmt,loginUserStmt,createFileInfo,findFileStmt,listAllFilesStmt;
     private static final String FILE_TABLE="file";
     private static final String FILEINFO_TABLE="fileinfo";
     private static final String USER_COLUMN_NAME="USERNAME";
@@ -16,7 +20,8 @@ public class FileDao {
     private static final String ACCESS_MODE ="filemode";
     private static final String[] tables = new String[2];
 
-    public FileDao(String dbms,String datasource){
+    public FileDao(String dbms,String datasource) throws RemoteException {
+        super();
         try {
             Connection connection = createDataSource(dbms,datasource);
             sqlQueryStatements(connection);
@@ -65,7 +70,8 @@ public class FileDao {
                 + tables[0]
                 + " WHERE USERNAME = ? AND PASS= ?");
         createFileInfo = conn.prepareStatement("INSERT INTO " + tables[1] + " VALUES(?, ?, ?, ?)");
-        //createFileInfo = conn.prepareStatement("INSERT INTO " + tables[1] + " VALUES(?, ?)");
+        listAllFilesStmt = conn.prepareStatement("SELECT * FROM "
+                + tables[1]);
     }
 
     /**
@@ -108,7 +114,6 @@ public class FileDao {
 
     private void createTable(Connection con, String table) throws SQLException {
         Statement statement = con.createStatement();
-        System.out.println("Parameters at createTable" + table);
         if(table.equalsIgnoreCase("userInfo")){
             statement.executeUpdate("CREATE TABLE " + table
                     + " (" + USER_COLUMN_NAME + " VARCHAR(32) PRIMARY KEY, "
@@ -170,7 +175,7 @@ public class FileDao {
     }
 
     public int saveToDB(FileInterface fileInterface) {
-        String name = fileInterface.getUserName();
+        String name = fileInterface.getFileName();
         String owner = fileInterface.getOwner();
         String access = fileInterface.getAccessMode();
         int size = fileInterface.getSize();
@@ -201,5 +206,20 @@ public class FileDao {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public List<FileCatalog> findAllFiles() {
+        List<FileCatalog> files = new ArrayList<>();
+        try {
+            ResultSet rs = listAllFilesStmt.executeQuery();
+            while (rs.next()){
+                files.add(new FileCatalog(rs.getString(FNAME),rs.getString(FOWNER),
+                        rs.getString(ACCESS_MODE),rs.getInt(FSIZE),this));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return files;
     }
 }

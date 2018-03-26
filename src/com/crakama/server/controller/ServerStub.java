@@ -7,6 +7,7 @@ import com.crakama.server.model.*;
 import java.io.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -136,6 +137,7 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
     }
 
     //TODO: Take care of if file not found
+    //TODO: Future Lookup---java.io.File setWritable(boolean writable, boolean ownerOnly)
     @Override
     public int checkAccessPermission(ClientInterface clientCallbackInterf,
                                      String filename, String currentUser) throws RemoteException {
@@ -153,6 +155,21 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
         }else {
             return 2;
         }
+
+    }
+
+
+    @Override
+    public void listfiles(ClientInterface clientCallbackInterf) throws RemoteException{
+        StringBuilder allfiles = new StringBuilder();
+        List<FileCatalog> files = fileDao.findAllFiles();
+        for(FileInterface file: files){
+            allfiles.append("File: "+"Name:"+file.getFileName()+"  "+"Owner:"+file.getOwner()+"  "+
+                    "AccessMode:"+file.getAccessMode()+"  "+"FileSize:"+file.getSize());
+            allfiles.append("\n");
+        }
+        String[] lines = allfiles.toString().split("\n");
+        clientCallbackInterf.fileContents(lines);
 
     }
 }

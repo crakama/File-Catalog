@@ -4,6 +4,7 @@ import com.crakama.client.net.CFileTransfer;
 import com.crakama.common.rmi.ClientInterface;
 import com.crakama.common.rmi.ServerInterface;
 import com.crakama.common.tcp.MsgType;
+import com.crakama.server.model.FileInterface;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -14,6 +15,7 @@ import java.nio.file.attribute.FileOwnerAttributeView;
 import java.nio.file.attribute.UserPrincipal;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -64,7 +66,6 @@ public class ClientManager implements Runnable{
                     case LOGOUT:
                         String user = loggedInUser.poll();
                         loggedInUser.clear();
-                        System.out.println(loggedInUser.poll());
                         loginsession = false;
                         clientCallbackInterf.serverResponse("User by name, "+user+
                                 " has been successfully logged out of the system ");
@@ -83,37 +84,25 @@ public class ClientManager implements Runnable{
                         if(loginsession==true){
                             cFileTransfer.sendMsg(MsgType.DOWNLOAD,cmdReader.getParameters(1));
 
-                        }else {
-                            clientCallbackInterf.serverResponse("You need to Register and " +
-                                    "Login to View the file");
-                        }
+                        }else { clientCallbackInterf.serverResponse("You need to Register and " +
+                                    "Login to View the file"); }
                         break;
                     case UPLOAD:
-                        //TODO: Take care of same column name for file and user tables
                         if(loginsession==true){
-
-                            serverInterface.checkfile(clientCallbackInterf,
-                                    cmdReader.getParameters(1),loggedInUser.peek(),cmdReader.getParameters(2),50);
-                            //long filesize = getfileSize(input);
-                            if(savedTODB){
-                                cFileTransfer.sendMsg(MsgType.UPLOAD,cmdReader.getParameters(1));
-                                cFileTransfer.from_C_DIR_toBuffer(new File(cmdReader.getParameters(1)));
-
-                            }else {
-                                clientCallbackInterf.serverResponse("Operation save to database Failed");
-                            }
-
-                        }else {
-                            clientCallbackInterf.serverResponse("You need to Register and " +
-                                    "Login to Upload the file");
-                        }
+                            uploadFile(clientCallbackInterf,
+                                    cmdReader.getParameters(1),cmdReader.getParameters(2));
+                        }else { clientCallbackInterf.serverResponse("You need to Register and " +
+                                    "Login to Upload the file"); }
                         break;
                     case READ:
                         permission(cmdReader.getCmd(),clientCallbackInterf,cmdReader.getParameters(1),null);
                         break;
-                    case WRITE:
+                    case EDIT:
                         permission(cmdReader.getCmd(),clientCallbackInterf,
                                 cmdReader.getParameters(1),cmdReader.getParameters(2));
+                        break;
+                    case LIST:
+                        serverInterface.listfiles(clientCallbackInterf);
 
                 }
             } catch (IOException e) {
@@ -123,6 +112,18 @@ public class ClientManager implements Runnable{
         }
     }
 
+    private void uploadFile(ClientInterface clientCallbackInterf, String param1, String param2) throws IOException {
+        serverInterface.checkfile(clientCallbackInterf,
+                param1,loggedInUser.peek(),param2,50);
+        //long filesize = getfileSize(input);
+        if(savedTODB){
+            cFileTransfer.sendMsg(MsgType.UPLOAD,param1);
+            cFileTransfer.from_C_DIR_toBuffer(new File(param1));
+
+        }else {
+            this.clientCallbackInterf.serverResponse("Operation save to database Failed");
+        }
+    }
     private void permission(CmdType cmd, ClientInterface clientCallbackInterf, String param1, String param2) throws RemoteException {
         int permission = serverInterface.checkAccessPermission(this.clientCallbackInterf,
                 param1,loggedInUser.peek());
@@ -132,7 +133,7 @@ public class ClientManager implements Runnable{
         }else if(permission == 1 ){
             if(cmd.equals(CmdType.READ)){
                 serverInterface.readFile(clientCallbackInterf,param1);
-            }else{
+            }else if(cmd.equals(CmdType.EDIT)){
                 serverInterface.writeFile(clientCallbackInterf,
                         param1,
                         param2);

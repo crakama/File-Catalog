@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
  * Gateway to ServerStub
  */
 public interface ServerInterface extends Remote {
-    public static final String SERVER_NAME_IN_REGISTRY = "fileserver";
+    String SERVER_NAME_IN_REGISTRY = "fileserver";
 
     void register(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException;
     void login(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException;
@@ -22,4 +22,6 @@ public interface ServerInterface extends Remote {
     void writeFile(ClientInterface clientCallbackInterf, String parameters, String cmdReaderParameters) throws RemoteException;
 
     int checkAccessPermission(ClientInterface clientCallbackInterf, String peek, String s) throws RemoteException;
+
+    void listfiles(ClientInterface clientCallbackInterf) throws RemoteException;
 }
