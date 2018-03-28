@@ -8,7 +8,7 @@ import java.util.List;
 
 public class FileDao extends UnicastRemoteObject {
     private PreparedStatement createUserStmt,deleteUserStmt,findfileAccessStmt,createfileAccessStmt,
-            findUserStmt,loginUserStmt,createFileInfo,findFileStmt,listAllFilesStmt;
+            findUserStmt,loginUserStmt,createFileInfo,findFileStmt,listAllFilesStmt,deleteFileAccessStmt;
     private static final String FILE_TABLE="file";
     private static final String FILEINFO_TABLE="fileinfo";
     private static final String USER_COLUMN_NAME="USERNAME";
@@ -18,6 +18,7 @@ public class FileDao extends UnicastRemoteObject {
     private static final String FSIZE ="fsize";
     private static final String FOWNER ="fowner";
     private static final String ACCESS_MODE ="filemode";
+    private static final String FACCESS_ID ="id";
     private static final String FACCESS_NAME ="filename";
     private static final String FACCESSOR ="fileAccessor";
     private static final String[] tables = new String[3];
@@ -71,10 +72,13 @@ public class FileDao extends UnicastRemoteObject {
         findfileAccessStmt = conn.prepareStatement("SELECT * FROM "
                 + tables[2]
                 + " WHERE filename = ?");
+        deleteFileAccessStmt = deleteUserStmt = conn.prepareStatement("DELETE FROM "
+                + tables[2]
+                + " WHERE id = ?");
         loginUserStmt = conn.prepareStatement("SELECT * FROM "
                 + tables[0]
                 + " WHERE USERNAME = ? AND PASS= ?");
-        createfileAccessStmt = conn.prepareStatement("INSERT INTO " + tables[2] + " VALUES(?, ?)");
+        createfileAccessStmt = conn.prepareStatement("INSERT INTO " + tables[2] + " VALUES(?, ?, ?)");
         createFileInfo = conn.prepareStatement("INSERT INTO " + tables[1] + " VALUES(?, ?, ?, ?)");
         listAllFilesStmt = conn.prepareStatement("SELECT * FROM "
                 + tables[1]);
@@ -118,7 +122,6 @@ public class FileDao extends UnicastRemoteObject {
         }
 
     }
-
     private void createTable(Connection con, String table) throws SQLException {
         Statement statement = con.createStatement();
         if(table.equalsIgnoreCase("userInfo")){
@@ -133,7 +136,8 @@ public class FileDao extends UnicastRemoteObject {
                     + FSIZE + " INT)");
         }else{
             statement.executeUpdate("CREATE TABLE " + table
-                    + " (" + FACCESS_NAME + " VARCHAR(32) PRIMARY KEY, "
+                    + " (" + FACCESS_ID + " int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, "
+                    + FACCESS_NAME + " VARCHAR(32), "
                     + FACCESSOR + " VARCHAR(32))" );
         }
     }
@@ -189,12 +193,12 @@ public class FileDao extends UnicastRemoteObject {
         String name = fileInterface.getFileName();
         String owner = fileInterface.getOwner();
         String access = fileInterface.getAccessMode();
-        int size = fileInterface.getSize();
+        long size = fileInterface.getSize();
         try {
             createFileInfo.setString(1,name);
             createFileInfo.setString(2,owner);
             createFileInfo.setString(3,access);
-            createFileInfo.setInt(4,size);
+            createFileInfo.setLong(4,size);
             int row = createFileInfo.executeUpdate();
             if(row != 1){
                 int code = 0;
@@ -236,10 +240,13 @@ public class FileDao extends UnicastRemoteObject {
 
     public void fileAccess(String filename, String currentUser) {
         try {
-            createfileAccessStmt.setString(1,filename);
-            createfileAccessStmt.setString(2,currentUser);
+            int randomnumber = (int) Math.random() * 1000;
+            createfileAccessStmt.setInt(1,randomnumber);
+            createfileAccessStmt.setString(2,filename);
+            createfileAccessStmt.setString(3,currentUser);
             createfileAccessStmt.executeUpdate();
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println("Could Not save to DB at FILE ACCESS");
         }
     }
@@ -249,7 +256,11 @@ public class FileDao extends UnicastRemoteObject {
             findfileAccessStmt.setString(1,filename);
             ResultSet rs = findfileAccessStmt.executeQuery();
             if(rs.next()){
-                return new FileEventsImpl(dir,rs.getString(FACCESS_NAME),rs.getString(FACCESSOR));
+                FileEvents fileEvents = new FileEventsImpl(dir,rs.getString(FACCESS_NAME),
+                        rs.getString(FACCESSOR),rs.getString(FACCESS_ID));
+                deleteFileAccessStmt.setInt(1,rs.getInt(FACCESS_ID));
+                deleteFileAccessStmt.executeUpdate();
+                return fileEvents;
             }
         } catch (SQLException e) {
             e.printStackTrace();

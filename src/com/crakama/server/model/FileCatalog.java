@@ -3,15 +3,16 @@ package com.crakama.server.model;
 public class FileCatalog implements FileInterface{
 
     private String fname,owner,access;
-    private int size;
+    private long size;
     private FileDao fileDao;
 
     /**
      * Constructor executed with need of DB connection
      * @param name
+     * @param fsize
      * @param fileDao
      */
-    public FileCatalog(String name, String owner,String access, int fsize, FileDao fileDao){
+    public FileCatalog(String name, String owner, String access, long fsize, FileDao fileDao){
         this.fname = name;
         this.owner = owner;
         this.access = access;
@@ -22,8 +23,9 @@ public class FileCatalog implements FileInterface{
     /**
      * Original contructor called with no need of DB connection, hence value null
      * @param
+     * @param fsize
      */
-    public FileCatalog(String filename, String fowner, String access, int fsize) {
+    public FileCatalog(String filename, String fowner, String access, long fsize) {
         this(filename,fowner,access,fsize,null);
     }
 
@@ -37,7 +39,7 @@ public class FileCatalog implements FileInterface{
     }
 
     @Override
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 

@@ -68,7 +68,7 @@ public class ClientManager implements Runnable{
                     case LOGOUT:
                         String user = loggedInUser.poll();
                         loggedInUser.clear();
-
+                        serverInterface.removeMonitoredFiles();
                         loginsession = false;
                         clientCallbackInterf.serverResponse("User by name, "+user+
                                 " has been successfully logged out of the system ");
@@ -107,7 +107,8 @@ public class ClientManager implements Runnable{
                                 cmdReader.getParameters(2));
                         break;
                     case LIST:
-                        serverInterface.listfiles(clientCallbackInterf);
+
+                        serverInterface.listfiles(clientCallbackInterf,loggedInUser.peek());
                         break;
                     case NOTIFY:
                         serverInterface.fileMonitor(clientCallbackInterf,cmdReader.getParameters(1));
@@ -122,9 +123,10 @@ public class ClientManager implements Runnable{
     }
 
     private void uploadFile(ClientInterface clientCallbackInterf, String param1, String param2) throws IOException {
+        long filesize = getfileSize(param1);
         serverInterface.checkfile(clientCallbackInterf,
-                param1,loggedInUser.peek(),param2,50);
-        //long filesize = getfileSize(input);
+                param1,loggedInUser.peek(),param2,filesize);
+
         if(savedTODB){
             cFileTransfer.sendMsg(MsgType.UPLOAD,param1);
             cFileTransfer.from_C_DIR_toBuffer(new File(param1));

@@ -3,7 +3,7 @@ package com.crakama.server.model;
 public class FileEventsImpl implements FileEvents {
     private String filename,fileDIR,event,accessor;
 
-    public FileEventsImpl(String fileDIR,String filename, String accessor){
+    public FileEventsImpl(String fileDIR, String filename, String accessor, String string){
         this.filename = filename;
         this.fileDIR = fileDIR;
         this.event = "Null at FEI";
@@ -11,7 +11,7 @@ public class FileEventsImpl implements FileEvents {
     }
 
     public FileEventsImpl() {
-        this(null,null,null);
+        this(null,null,null,null);
     }
     public void setFilename(String filename) {
         this.filename = filename;

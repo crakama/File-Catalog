@@ -1,6 +1,5 @@
 package com.crakama.server.controller;
 
-import com.crakama.client.net.CFileTransfer;
 import com.crakama.client.view.CmdType;
 import com.crakama.common.rmi.ClientInterface;
 import com.crakama.common.rmi.ServerInterface;
@@ -23,7 +22,7 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
     private FileInterface fileInterface;
     private Map<String,ClientInterface> monitoredFiles = new HashMap<>();
     private FileEvents fileEvents = new FileEventsImpl();
-    private ArrayList<WatchService> monitors;
+    private List<String> monitors = new ArrayList<>();
     /**
      * Constructor calls on superclass U.R.O to handle exporting operations
      * @throws RemoteException
@@ -34,12 +33,9 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
         super();
         //TODO: Initialise FileDao here
         this.fileDao = new FileDao(dbms,datasource);
-        //startMonitors();
         new Thread(new FileWatcherThread()).start();
     }
-    public void start()throws RemoteException{
-        startMonitors();
-    }
+
 
     /**
      * @param clientCallbackInterf used to send notification back to client/user via ClientInterface() object
@@ -88,7 +84,7 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
     }
 
     @Override
-    public void checkfile(ClientInterface clientCallbackInterf, String filename, String fowner, String accessmode, int fsize) throws RemoteException {
+    public void checkfile(ClientInterface clientCallbackInterf, String filename, String fowner, String accessmode, long fsize) throws RemoteException {
         if(fileDao.findFileByName(filename) != null){
             clientCallbackInterf.serverResponse("\nFile has to be Unique!!!,Please try another name\n");
         }else{
@@ -139,11 +135,17 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
                     ClientInterface obj = monitoredFiles.get(filekey);
                     obj.serverResponse(" A :"+action +" operation was performed on your public file named:"+
                             filename+" by user :"+fileEventsObj.getAccessor());
+                    monitors.add(filekey);
                     fileDao.deleteFileAccessOP();
                 }
             }
         }
 
+    }
+    public void removeMonitoredFiles(){
+        for(String monitor: monitors){
+            monitoredFiles.remove(monitor);
+        }
     }
 
     @Override
@@ -159,7 +161,6 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
                 FileOutputStream fout = new FileOutputStream(file,true);
                 fout.write(filecontents.getBytes());
                 fout.close();
-                //notifyFileOwner(edit,filename,loggeduser);
                 if(((fileObj!=null))&&(!(fileObj.getOwner().equalsIgnoreCase(loggeduser)))){
                     fileDao.fileAccess(filename,loggeduser);
                 }
@@ -196,17 +197,22 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
 
 
     @Override
-    public void listfiles(ClientInterface clientCallbackInterf) throws RemoteException{
+    public void listfiles(ClientInterface clientCallbackInterf, String currentUser) throws RemoteException{
+        System.out.println("USER " +currentUser);
         StringBuilder allfiles = new StringBuilder();
         List<FileCatalog> files = fileDao.findAllFiles();
-        for(FileInterface file: files){
-            allfiles.append("File: "+"Name:"+file.getFileName()+"  "+"Owner:"+file.getOwner()+"  "+
-                    "AccessMode:"+file.getAccessMode()+"  "+"FileSize:"+file.getSize());
-            allfiles.append("\n");
+        System.out.println(files);
+        for(FileInterface file : files){
+            System.out.println(file);
+            if(  ( file.getAccessMode().equalsIgnoreCase("private") && file.getOwner().equalsIgnoreCase(currentUser)
+                  ) ||(file.getAccessMode().equalsIgnoreCase("public"))){
+                                allfiles.append("File: "+"Name:"+file.getFileName()+"  "+"Owner:"+file.getOwner()+"  "+
+                                        "AccessMode:"+file.getAccessMode()+"  "+"FileSize:"+file.getSize());
+                                allfiles.append("\n");
+                    }
         }
         String[] lines = allfiles.toString().split("\n");
         clientCallbackInterf.fileContents(lines);
-
     }
 
     @Override

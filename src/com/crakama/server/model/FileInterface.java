@@ -6,5 +6,5 @@ public interface FileInterface extends Serializable{
     String getFileName();
     String getOwner();
     String getAccessMode();
-    int getSize();
+    long getSize();
 }

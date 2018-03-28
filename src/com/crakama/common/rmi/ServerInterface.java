@@ -1,7 +1,6 @@
 package com.crakama.common.rmi;
 
 import com.crakama.client.view.CmdType;
-import com.crakama.server.model.FileEvents;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -18,7 +17,7 @@ public interface ServerInterface extends Remote {
     void login(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException;
     void unregister(ClientInterface clientCallbackInterf, String name, String password) throws RemoteException;
 
-    void checkfile(ClientInterface clientCallbackInterf, String parameters, String kate, String filename, int i) throws RemoteException;
+    void checkfile(ClientInterface clientCallbackInterf, String parameters, String kate, String filename, long i) throws RemoteException;
 
     void readFile(CmdType read, String loggeduser, ClientInterface clientCallbackInterf, String input) throws RemoteException;
 
@@ -26,9 +25,10 @@ public interface ServerInterface extends Remote {
 
     int checkAccessPermission(ClientInterface clientCallbackInterf, String peek, String s) throws RemoteException;
 
-    void listfiles(ClientInterface clientCallbackInterf) throws RemoteException;
+    void listfiles(ClientInterface clientCallbackInterf, String peek) throws RemoteException;
 
     void fileMonitor(ClientInterface clientCallbackInterf, String parameters) throws RemoteException;
 
     void startMonitors() throws RemoteException;
+    void removeMonitoredFiles() throws RemoteException;
 }
