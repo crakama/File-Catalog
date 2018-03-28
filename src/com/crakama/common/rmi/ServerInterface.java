@@ -1,10 +1,10 @@
 package com.crakama.common.rmi;
 
 import com.crakama.client.view.CmdType;
+import com.crakama.server.model.FileEvents;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.List;
 
 
 /**
@@ -30,5 +30,5 @@ public interface ServerInterface extends Remote {
 
     void fileMonitor(ClientInterface clientCallbackInterf, String parameters) throws RemoteException;
 
-    void stopMonitors(ClientInterface clientCallbackInterf, List<String> monitors) throws RemoteException;
+    void startMonitors() throws RemoteException;
 }

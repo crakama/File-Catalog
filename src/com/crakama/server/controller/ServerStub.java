@@ -1,17 +1,16 @@
 package com.crakama.server.controller;
 
+import com.crakama.client.net.CFileTransfer;
 import com.crakama.client.view.CmdType;
 import com.crakama.common.rmi.ClientInterface;
 import com.crakama.common.rmi.ServerInterface;
 import com.crakama.server.model.*;
 
 import java.io.*;
+import java.nio.file.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 /**
  * This is the only class(StartServer Stub) that clients can use to reach the server remotely.
@@ -22,7 +21,9 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
     private final FileDao fileDao;
     private UserInterface userInterface;
     private FileInterface fileInterface;
-    private Map<String,ClientInterface> monitoredFiles = new ConcurrentHashMap<>();
+    private Map<String,ClientInterface> monitoredFiles = new HashMap<>();
+    private FileEvents fileEvents = new FileEventsImpl();
+    private ArrayList<WatchService> monitors;
     /**
      * Constructor calls on superclass U.R.O to handle exporting operations
      * @throws RemoteException
@@ -33,6 +34,11 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
         super();
         //TODO: Initialise FileDao here
         this.fileDao = new FileDao(dbms,datasource);
+        //startMonitors();
+        new Thread(new FileWatcherThread()).start();
+    }
+    public void start()throws RemoteException{
+        startMonitors();
     }
 
     /**
@@ -56,6 +62,7 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
         User userObj;
         if((userObj = fileDao.findUserByName(name)) != null){
             if ((userObj.getUserName().equalsIgnoreCase(name))&& (( userObj.getPassword().equalsIgnoreCase(password) ))){
+
                 clientCallbackInterf.serverResponse("VERIFICATION: Login of user :"+
                         userObj.getUserName()+ " with password :"+userObj.getPassword()+" was Successful!!!");
                 clientCallbackInterf.currentUser(userObj.getUserName(),userObj.getPassword());
@@ -116,25 +123,33 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
         }
         String[] lines = filecontents.toString().split("\n");
         clientCallbackInterf.fileContents(lines);
-        notifyFileOwner(read,filename,currentUser);
-    }
-    private void notifyFileOwner(CmdType cmd,String filename,String currentUser) throws RemoteException {
+        //notifyFileOwner(read,filename,currentUser);
         FileCatalog fileObj=fileDao.findFileByName(filename);
         if(((fileObj!=null))&&(!(fileObj.getOwner().equalsIgnoreCase(currentUser)))){
-            fileObj.getOwner();
+           fileDao.fileAccess(filename,currentUser);
+        }
+    }
+    private void notifyFileOwner(String dir, String action, String filename) throws RemoteException {
+        FileCatalog fileObj=fileDao.findFileByName(filename);
+        FileEvents fileEventsObj = fileDao.findfileByEvent(filename,dir);
+
+        if( ((fileObj!=null) &&(fileEventsObj!=null))&&(!(fileObj.getOwner().equalsIgnoreCase(fileEventsObj.getAccessor())))){
             for(String filekey: monitoredFiles.keySet()){
                 if(filename.equalsIgnoreCase(filekey)){
                     ClientInterface obj = monitoredFiles.get(filekey);
-                    obj.serverResponse(" A :"+cmd +" operation was performed on your public file:"+
-                            filename+"by user :"+currentUser);
+                    obj.serverResponse(" A :"+action +" operation was performed on your public file named:"+
+                            filename+" by user :"+fileEventsObj.getAccessor());
+                    fileDao.deleteFileAccessOP();
                 }
             }
         }
+
     }
 
     @Override
     public void writeFile(CmdType edit, String loggeduser, ClientInterface clientCallbackInterf, String filename,
                           String filecontents) throws RemoteException {
+        FileCatalog fileObj=fileDao.findFileByName(filename);
         String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalogAlpha\\uploads\\";
         File file = new File(fileLocation+filename);
         if (!(file.exists())){
@@ -144,7 +159,10 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
                 FileOutputStream fout = new FileOutputStream(file,true);
                 fout.write(filecontents.getBytes());
                 fout.close();
-                notifyFileOwner(edit,filename,loggeduser);
+                //notifyFileOwner(edit,filename,loggeduser);
+                if(((fileObj!=null))&&(!(fileObj.getOwner().equalsIgnoreCase(loggeduser)))){
+                    fileDao.fileAccess(filename,loggeduser);
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -197,14 +215,40 @@ public class ServerStub extends UnicastRemoteObject implements ServerInterface{
     }
 
     @Override
-    public void stopMonitors(ClientInterface clientCallbackInterf, List<String> monitors) {
-        for(String filekey: monitoredFiles.keySet()){
-            for(String monitor:monitors){
-                if(monitor.equalsIgnoreCase(filekey)){
-                    System.out.println("REMOVED KEY"+ filekey);
-                    monitoredFiles.remove(filekey);
+    public void startMonitors() {
+        try(WatchService service = FileSystems.getDefault().newWatchService()){
+            Map<WatchKey, Path> keyPathMap = new HashMap<>();
+            String fileLocation = "D:\\Projects\\IdeaProjects\\FileCatalogAlpha\\uploads\\";
+            Path path = Paths.get(fileLocation);
+            keyPathMap.put(path.register(service,
+                    StandardWatchEventKinds.ENTRY_DELETE,
+                    StandardWatchEventKinds.ENTRY_MODIFY),path);
+            WatchKey watchKey;
+            do{
+                watchKey = service.take();
+                Path watchedDIR = keyPathMap.get(watchKey);
+                List<WatchEvent<?>> events = watchKey.pollEvents();
+                for(WatchEvent<?> event: events){
+                    WatchEvent.Kind<?> eventType = event.kind();
+                    Path eventPath = (Path) event.context();
+                    notifyFileOwner(String.valueOf(watchedDIR), String.valueOf(eventType),String.valueOf(eventPath));
                 }
-            }
+            }while (watchKey.reset());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class FileWatcherThread implements Runnable {
+        public FileWatcherThread() {
+        }
+
+        @Override
+        public void run() {
+            startMonitors();
         }
     }
 }

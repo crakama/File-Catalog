@@ -68,7 +68,7 @@ public class ClientManager implements Runnable{
                     case LOGOUT:
                         String user = loggedInUser.poll();
                         loggedInUser.clear();
-                        serverInterface.stopMonitors(clientCallbackInterf,getMonitors());
+
                         loginsession = false;
                         clientCallbackInterf.serverResponse("User by name, "+user+
                                 " has been successfully logged out of the system ");
@@ -110,7 +110,6 @@ public class ClientManager implements Runnable{
                         serverInterface.listfiles(clientCallbackInterf);
                         break;
                     case NOTIFY:
-                        this.monitor(cmdReader.getParameters(1));
                         serverInterface.fileMonitor(clientCallbackInterf,cmdReader.getParameters(1));
                         //TODO: Alternative solution, store all notification subscription on DB &
                         // TODO: use REGISTER/DE-REGISTER mechanism, to avoid loops
@@ -121,17 +120,7 @@ public class ClientManager implements Runnable{
 
         }
     }
-    private List<String> getMonitors(){
-        List<String> monfiles = new ArrayList<>();
 
-        for( int i = 0; i < monfiles.size(); i++) {
-            monfiles.add(filemonitor.get(i));
-        }
-        return monfiles ;
-    }
-    private void monitor(String filename){
-        filemonitor.add(filename);
-    }
     private void uploadFile(ClientInterface clientCallbackInterf, String param1, String param2) throws IOException {
         serverInterface.checkfile(clientCallbackInterf,
                 param1,loggedInUser.peek(),param2,50);

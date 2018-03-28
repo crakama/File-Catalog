@@ -37,6 +37,7 @@ public class CFileTransfer {
 
             Thread clientThread = new Thread(new ListenerThread(clientCallbackInterf,readData));
             clientThread.start();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

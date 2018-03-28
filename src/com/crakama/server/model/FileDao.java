@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileDao extends UnicastRemoteObject {
-    private PreparedStatement createUserStmt,deleteUserStmt,
+    private PreparedStatement createUserStmt,deleteUserStmt,findfileAccessStmt,createfileAccessStmt,
             findUserStmt,loginUserStmt,createFileInfo,findFileStmt,listAllFilesStmt;
     private static final String FILE_TABLE="file";
     private static final String FILEINFO_TABLE="fileinfo";
@@ -18,7 +18,9 @@ public class FileDao extends UnicastRemoteObject {
     private static final String FSIZE ="fsize";
     private static final String FOWNER ="fowner";
     private static final String ACCESS_MODE ="filemode";
-    private static final String[] tables = new String[2];
+    private static final String FACCESS_NAME ="filename";
+    private static final String FACCESSOR ="fileAccessor";
+    private static final String[] tables = new String[3];
 
     public FileDao(String dbms,String datasource) throws RemoteException {
         super();
@@ -66,9 +68,13 @@ public class FileDao extends UnicastRemoteObject {
         findFileStmt = conn.prepareStatement("SELECT * FROM "
                 + tables[1]
                 + " WHERE fname = ?");
+        findfileAccessStmt = conn.prepareStatement("SELECT * FROM "
+                + tables[2]
+                + " WHERE filename = ?");
         loginUserStmt = conn.prepareStatement("SELECT * FROM "
                 + tables[0]
                 + " WHERE USERNAME = ? AND PASS= ?");
+        createfileAccessStmt = conn.prepareStatement("INSERT INTO " + tables[2] + " VALUES(?, ?)");
         createFileInfo = conn.prepareStatement("INSERT INTO " + tables[1] + " VALUES(?, ?, ?, ?)");
         listAllFilesStmt = conn.prepareStatement("SELECT * FROM "
                 + tables[1]);
@@ -97,6 +103,7 @@ public class FileDao extends UnicastRemoteObject {
         DatabaseMetaData dbm = null;
         tables[0] = "userInfo";
         tables[1] = "fileInfo";
+        tables[2] = "fileAccess";
         try {
             dbm = conn.getMetaData();
             for(int i= 0;i<tables.length;i++){
@@ -118,12 +125,16 @@ public class FileDao extends UnicastRemoteObject {
             statement.executeUpdate("CREATE TABLE " + table
                     + " (" + USER_COLUMN_NAME + " VARCHAR(32) PRIMARY KEY, "
                     + PASS_COLUMN_NAME + " VARCHAR(32))" );
-        }else {
+        }else if(table.equalsIgnoreCase("fileInfo")) {
             statement.executeUpdate("CREATE TABLE " + table
                     + " (" + FNAME + " VARCHAR(32), "
                     + FOWNER + " VARCHAR(32), "
                     + ACCESS_MODE + " VARCHAR(32), "
                     + FSIZE + " INT)");
+        }else{
+            statement.executeUpdate("CREATE TABLE " + table
+                    + " (" + FACCESS_NAME + " VARCHAR(32) PRIMARY KEY, "
+                    + FACCESSOR + " VARCHAR(32))" );
         }
     }
 
@@ -221,5 +232,31 @@ public class FileDao extends UnicastRemoteObject {
         }
 
         return files;
+    }
+
+    public void fileAccess(String filename, String currentUser) {
+        try {
+            createfileAccessStmt.setString(1,filename);
+            createfileAccessStmt.setString(2,currentUser);
+            createfileAccessStmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Could Not save to DB at FILE ACCESS");
+        }
+    }
+
+    public FileEvents findfileByEvent(String filename, String dir) {
+        try {
+            findfileAccessStmt.setString(1,filename);
+            ResultSet rs = findfileAccessStmt.executeQuery();
+            if(rs.next()){
+                return new FileEventsImpl(dir,rs.getString(FACCESS_NAME),rs.getString(FACCESSOR));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void deleteFileAccessOP() {
     }
 }
