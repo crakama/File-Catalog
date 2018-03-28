@@ -114,6 +114,9 @@ public class ClientManager implements Runnable{
                         serverInterface.fileMonitor(clientCallbackInterf,cmdReader.getParameters(1));
                         //TODO: Alternative solution, store all notification subscription on DB &
                         // TODO: use REGISTER/DE-REGISTER mechanism, to avoid loops
+                    case HELP:
+                     default:
+                            help();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -187,17 +190,19 @@ public class ClientManager implements Runnable{
     }
 
    public String inputHandler() throws IOException {
-       System.out.println("\n Enter one of the following Commands to proceed:\n" +
-               " Use <localhost>, <name and password> or <name> in options\n");
-        for(CmdType cmd: CmdType.values()){
-            if(cmd == CmdType.NO_COMMAND){
-                continue;
-            }
-            System.out.println(cmd.toString() + " <option>");
-        }
+       System.out.println("\n Enter a Command to proceed, if not sure type HELP to see a list commands:\n");
+
         this.userInput = new BufferedReader(new InputStreamReader(System.in));
         String input = userInput.readLine();
         return input;
+   }
+   public void help(){
+       for(CmdType cmd: CmdType.values()){
+           if(cmd == CmdType.NO_COMMAND){
+               continue;
+           }
+           System.out.println(cmd.toString() + " <option>");
+       }
    }
 
     /**
